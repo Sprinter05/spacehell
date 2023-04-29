@@ -4,7 +4,6 @@ PFont cambria;
 
 Character character;
 
-Bullet bullet;
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 int bulletDelay = 50;
 int lastShot = millis();
