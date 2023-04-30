@@ -3,18 +3,23 @@ class Character {
     float y;
     float xspeed;
     float yspeed;
+    float size;
+    int health;
 
-    Character(float x, float y, float xspeed, float yspeed) {
+    Character(float x, float y, float xspeed, float yspeed, float size, int health) {
         this.x = x;
         this.y = y;
         this.xspeed = xspeed;
         this.yspeed = yspeed;
+        this.size = size;
+        this.health = health;
     }
 
     void display(){
         fill(0,0,0);
+        strokeWeight(0);
         stroke(0,0,0);
-        square(x,y,20);
+        square(x,y,size);
     }
     void move(){
         if (aPressed){
