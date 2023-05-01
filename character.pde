@@ -5,6 +5,8 @@ class Character {
     float yspeed;
     float size;
     int health;
+    int healthDelay = 100;
+    int lastDamage = millis();
 
     Character(float x, float y, float xspeed, float yspeed, float size, int health) {
         this.x = x;
@@ -34,5 +36,10 @@ class Character {
         if (sPressed){
             y += yspeed;
         }
+    }
+
+    boolean isDead(){
+        if (health <= 0) return true;
+        return false;
     }
 }
