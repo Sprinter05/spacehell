@@ -37,6 +37,7 @@ void draw(){
   //cls
   background(255,255,255);
 
+  //game over if character dead
   if (character.isDead()) {
     noLoop();
     textFont(cambria);
@@ -45,14 +46,14 @@ void draw(){
     text("> GAME OVER <",width/2-200,30);
   }
 
-  //test collision
+  //summon test collision
   testCollision = new CollisionBox(300, 200, 25,25);
   testCollision.display();
 
   //summon character
   if (!character.isDead()) summonCharacter(character);
 
-  //test boss
+  //summon test boss
   if (!testBoss.isDead()) summonBoss(testBoss);
   
   //bullet activation and bullet functions
@@ -62,7 +63,7 @@ void draw(){
     bulletsColl.add(new CollisionBox(b.x - b.radius/2, b.y - b.radius/2, b.radius,b.radius));
     lastShot = millis();
   }
-  println(str(bulletsColl.size()) + ", " + str(bullets.size()));
+  println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
   bulletStuff();
 
   //activate other functions
@@ -125,16 +126,16 @@ void summonBoss(Boss boss){
   text(str(boss.health),width-50, 40);
 }
 
+//fps counter (top left)
 void fps() {
-  //fps counter (top left)
   textFont(cambria);
   textSize(20);
   fill(0,255,0);
   text(str(frameRate),25,25);
 }
 
+//handle amount of bullets and drawing bullets on screen (collisions included)
 void bulletStuff() {
-  //handle amount of bullets
   Iterator<Bullet> i = bullets.listIterator();
   Iterator<CollisionBox> j = bulletsColl.listIterator();
   while (i.hasNext() && j.hasNext()) {
