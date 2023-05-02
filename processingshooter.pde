@@ -72,8 +72,10 @@ void draw(){
 
 //handle character
 void summonCharacter(Character character){
+  //appear and move
   character.display();
   character.move();
+  //collision with testCollision
   CollisionBox charCollision = new CollisionBox(character.x - character.size/8, character.y - character.size/8, character.size + 5, character.size + 5);
   charCollision.display();
   if (
@@ -87,6 +89,20 @@ void summonCharacter(Character character){
       character.lastDamage = millis();
     }
   }
+  //collision with edges
+  if (charCollision.xpos < 0) {
+    character.x = 0;
+  }
+  if (charCollision.ypos < 0) {
+    character.y = 0;
+  }
+  if (charCollision.xpos > width - character.size) {
+    character.x = width - character.size;
+  }
+  if (charCollision.ypos > height - character.size) {
+    character.y = height - character.size;
+  }
+  //display health
   textFont(cambria);
   textSize(20);
   fill(255,0,0);
@@ -95,7 +111,9 @@ void summonCharacter(Character character){
 
 //handle boss
 void summonBoss(Boss boss){
+  //appear
   boss.display();
+  //collision with bullets
   CollisionBox bossCollision = new CollisionBox(boss.x - boss.size/16, boss.y - boss.size/16, boss.size + 5, boss.size + 5);
   bossCollision.display();
   Iterator<Bullet> i = bullets.listIterator();
@@ -120,6 +138,7 @@ void summonBoss(Boss boss){
       j.remove();
     }
   }
+  //display health
   textFont(cambria);
   textSize(20);
   fill(160,30,240);
