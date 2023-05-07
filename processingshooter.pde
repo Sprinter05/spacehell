@@ -123,10 +123,7 @@ void summonCharacter(Character character){
     character.y = height - character.size;
   }
   //display health
-  textFont(cambria);
-  textSize(20);
-  fill(255,0,0);
-  text(str(character.health),width-50, 20);
+  character.displayHP();
 }
 
 //handle boss
@@ -168,10 +165,7 @@ void summonBoss(Boss boss){
     xangle += 5;
   }
   //display health
-  textFont(cambria);
-  textSize(20);
-  fill(160,30,240);
-  text(str(boss.health),width-50, 40);
+  boss.displayHP();
 }
 
 //fps counter (top left)
@@ -181,7 +175,6 @@ void fps() {
   fill(0,255,0);
   text(str(frameRate),25,25);
 }
-
 
 //handle amount of bossbullets and drawing boss bullets on screen (collisions included)
 void xbulletStuff() {

@@ -29,4 +29,11 @@ class Boss {
         if (health <= 0) return true;
         return false;
     }
+
+    void displayHP(){
+        textFont(cambria);
+        textSize(20);
+        fill(160,30,240);
+        text(str(health),width-50, 40);
+    }
 }

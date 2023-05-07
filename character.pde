@@ -42,4 +42,11 @@ class Character {
         if (health <= 0) return true;
         return false;
     }
+
+    void displayHP(){
+        textFont(cambria);
+        textSize(20);
+        fill(255,0,0);
+        text(str(health),width-50, 20);
+    }
 }
