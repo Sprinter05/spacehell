@@ -3,7 +3,6 @@ import java.util.*;
 //create objects
 PFont cambria;
 Character character;
-CollisionBox testCollision;
 Boss testBoss;
 
 //bullet stuff
@@ -11,6 +10,12 @@ ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 ArrayList<CollisionBox> bulletsColl = new ArrayList<CollisionBox>();
 int bulletDelay = 50;
 int lastShot = millis();
+
+//boss bullet stuff
+ArrayList<XBullet> xbullets = new ArrayList<XBullet>();
+ArrayList<CollisionCircle> xbulletsColl = new ArrayList<CollisionCircle>();
+int xbulletDelay = 50;
+int xlastShot = millis();
 
 //keypress detections
 boolean wPressed = false;
@@ -20,6 +25,8 @@ boolean aPressed = false;
 boolean zPressed = false;
 boolean tPressed = false;
 boolean spcPressed = false;
+
+float xangle = 90.0;
 
 void setup(){
   //setup canvas and parameters
@@ -46,10 +53,6 @@ void draw(){
     text("> GAME OVER <",width/2-200,30);
   }
 
-  //summon test collision
-  testCollision = new CollisionBox(300, 200, 25,25);
-  testCollision.display();
-
   //summon character
   if (!character.isDead()) summonCharacter(character);
 
@@ -63,8 +66,9 @@ void draw(){
     bulletsColl.add(new CollisionBox(b.x - b.radius/2, b.y - b.radius/2, b.radius,b.radius));
     lastShot = millis();
   }
-  println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
+  // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
   bulletStuff();
+  xbulletStuff();
 
   //activate other functions
   fps();
@@ -75,18 +79,34 @@ void summonCharacter(Character character){
   //appear and move
   character.display();
   character.move();
-  //collision with testCollision
+  //create own collision
   CollisionBox charCollision = new CollisionBox(character.x - character.size/8, character.y - character.size/8, character.size + 5, character.size + 5);
   charCollision.display();
-  if (
-  charCollision.xpos + charCollision.wid > testCollision.xpos && 
-  charCollision.xpos < testCollision.xpos + testCollision.wid &&
-  charCollision.ypos + charCollision.hei > testCollision.ypos &&
-  charCollision.ypos < testCollision.ypos + testCollision.hei
-  ) {
-    if (millis() - character.lastDamage > character.healthDelay) {
-      character.health -= 1;
-      character.lastDamage = millis();
+  //collision with boss bullets
+  Iterator<XBullet> i = xbullets.listIterator();
+  Iterator<CollisionCircle> j = xbulletsColl.listIterator();
+  while (i.hasNext()){
+    XBullet b = i.next();
+    CollisionCircle c = j.next();
+    float checkX = c.xpos;
+    float checkY = c.ypos;
+    if (c.xpos < charCollision.xpos) {checkX = charCollision.xpos;}
+    else if (c.xpos > charCollision.xpos + charCollision.wid) {checkX = charCollision.xpos + charCollision.wid;}
+    if (c.ypos < charCollision.ypos) {checkY = charCollision.ypos;}
+    else if (c.ypos > charCollision.ypos + charCollision.hei) {checkY = charCollision.ypos + charCollision.hei;}
+    float distX = c.xpos - checkX;
+    float distY = c.ypos - checkY;
+    float distance = sqrt((distX*distX) + (distY*distY));
+    if (distance <= c.radius) {
+      if (millis() - character.lastDamage > character.healthDelay) {
+        character.health -= 1;
+        character.lastDamage = millis();
+        if (character.isDead()){
+
+        }
+      }
+      i.remove();
+      j.remove();
     }
   }
   //collision with edges
@@ -113,9 +133,10 @@ void summonCharacter(Character character){
 void summonBoss(Boss boss){
   //appear
   boss.display();
-  //collision with bullets
+  //create own collision
   CollisionBox bossCollision = new CollisionBox(boss.x - boss.size/16, boss.y - boss.size/16, boss.size + 5, boss.size + 5);
   bossCollision.display();
+  //collision with bullets
   Iterator<Bullet> i = bullets.listIterator();
   Iterator<CollisionBox> j = bulletsColl.listIterator();
   while (i.hasNext()){
@@ -125,7 +146,7 @@ void summonBoss(Boss boss){
       bossCollision.xpos + bossCollision.wid > c.xpos && 
       bossCollision.xpos < c.xpos + c.wid &&
       bossCollision.ypos + bossCollision.hei > c.ypos &&
-      bossCollision.ypos < c.ypos + testCollision.hei
+      bossCollision.ypos < c.ypos + bossCollision.hei
     ) {
       if (millis() - boss.lastDamage > boss.healthDelay) {
         boss.health -= 1;
@@ -137,6 +158,14 @@ void summonBoss(Boss boss){
       i.remove();
       j.remove();
     }
+  }
+  //test bullet summon
+  if ((millis() - xlastShot) > xbulletDelay){
+    XBullet b = new XBullet(boss.x + boss.size /2, boss.y + boss.size /2, 15, 15, radians(xangle), 5);
+    xbullets.add(b);
+    xbulletsColl.add(new CollisionCircle(b.x - b.radius/2, b.y - b.radius/2, b.radius +1));
+    xlastShot = millis();
+    xangle += 5;
   }
   //display health
   textFont(cambria);
@@ -151,6 +180,25 @@ void fps() {
   textSize(20);
   fill(0,255,0);
   text(str(frameRate),25,25);
+}
+
+
+//handle amount of bossbullets and drawing boss bullets on screen (collisions included)
+void xbulletStuff() {
+  Iterator<XBullet> i = xbullets.listIterator();
+  Iterator<CollisionCircle> j = xbulletsColl.listIterator();
+  while (i.hasNext() && j.hasNext()) {
+    XBullet b = i.next();
+    CollisionCircle c = j.next();
+    b.draw();
+    c.ypos = b.y + b.radius/8;
+    c.xpos = b.x + b.radius/8;
+    c.display();
+    if (b.update()) {
+      i.remove();
+      j.remove();
+    }
+  }
 }
 
 //handle amount of bullets and drawing bullets on screen (collisions included)
