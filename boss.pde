@@ -16,9 +16,6 @@ class Boss {
     }
 
     void display(){
-        if ((millis() - lastShot) > bulletDelay){
-            
-        }
         fill(160,30,240);
         strokeWeight(0);
         stroke(0,0,0);

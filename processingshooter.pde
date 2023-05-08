@@ -26,8 +26,6 @@ boolean zPressed = false;
 boolean tPressed = false;
 boolean spcPressed = false;
 
-float xangle = 90.0;
-
 void setup(){
   //setup canvas and parameters
   size(1280,720);
@@ -68,7 +66,6 @@ void draw(){
   }
   // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
   bulletStuff();
-  xbulletStuff();
 
   //activate other functions
   fps();
@@ -158,11 +155,7 @@ void summonBoss(Boss boss){
   }
   //test bullet summon
   if ((millis() - xlastShot) > xbulletDelay){
-    XBullet b = new XBullet(boss.x + boss.size /2, boss.y + boss.size /2, 15, 15, radians(xangle), 5);
-    xbullets.add(b);
-    xbulletsColl.add(new CollisionCircle(b.x - b.radius/2, b.y - b.radius/2, b.radius +1));
-    xlastShot = millis();
-    xangle += 5;
+
   }
   //display health
   boss.displayHP();
@@ -174,24 +167,6 @@ void fps() {
   textSize(20);
   fill(0,255,0);
   text(str(frameRate),25,25);
-}
-
-//handle amount of bossbullets and drawing boss bullets on screen (collisions included)
-void xbulletStuff() {
-  Iterator<XBullet> i = xbullets.listIterator();
-  Iterator<CollisionCircle> j = xbulletsColl.listIterator();
-  while (i.hasNext() && j.hasNext()) {
-    XBullet b = i.next();
-    CollisionCircle c = j.next();
-    b.draw();
-    c.ypos = b.y + b.radius/8;
-    c.xpos = b.x + b.radius/8;
-    c.display();
-    if (b.update()) {
-      i.remove();
-      j.remove();
-    }
-  }
 }
 
 //handle amount of bullets and drawing bullets on screen (collisions included)
