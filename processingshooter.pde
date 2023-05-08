@@ -34,7 +34,7 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(150,150,6,6,20,100);
+  character = new Character(150,150,6,6,50,100);
   testBoss = new Boss(width/2, 50, 40, 200);
 }
 
@@ -59,7 +59,7 @@ void draw(){
   
   //bullet activation and bullet functions
   if (zPressed && (millis() - lastShot) > bulletDelay){
-    Bullet b = new Bullet(character.x +10, character.y -15,15,5);
+    Bullet b = new Bullet(character.x + character.size/2, character.y -15,15,5);
     bullets.add(b);
     bulletsColl.add(new CollisionBox(b.x - b.radius/2, b.y - b.radius/2, b.radius,b.radius));
     lastShot = millis();
@@ -77,7 +77,8 @@ void summonCharacter(Character character){
   character.display();
   character.move();
   //create own collision
-  CollisionBox charCollision = new CollisionBox(character.x - character.size/8, character.y - character.size/8, character.size + 5, character.size + 5);
+  float sizeMult = 5;
+  CollisionBox charCollision = new CollisionBox(character.x - (sizeMult/2), character.y - (sizeMult/2), character.size + sizeMult, character.size + sizeMult);
   charCollision.display();
   //collision with boss bullets
   Iterator<XBullet> i = xbullets.listIterator();
@@ -128,7 +129,8 @@ void summonBoss(Boss boss){
   //appear
   boss.display();
   //create own collision
-  CollisionBox bossCollision = new CollisionBox(boss.x - boss.size/16, boss.y - boss.size/16, boss.size + 5, boss.size + 5);
+  float sizeMult = 5;
+  CollisionBox bossCollision = new CollisionBox(boss.x - (sizeMult/2), boss.y - (sizeMult/2), boss.size + sizeMult, boss.size + sizeMult);
   bossCollision.display();
   //collision with bullets
   Iterator<Bullet> i = bullets.listIterator();
