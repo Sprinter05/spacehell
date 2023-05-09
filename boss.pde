@@ -30,8 +30,11 @@ class Boss {
     }
 
     void displayHP(){
+        strokeWeight(3);
+        fill(255,255,255);
+        stroke(255, 255, 255);
+        rect(1200, 700, 20, -maxHealth * 3.2, 20);
         fill(160,30,240);
-        strokeWeight(5);
         stroke(255, 255, 255);
         rect(1200, 700, 20, -health * 3.2, 20);
     }
