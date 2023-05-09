@@ -4,19 +4,21 @@ class Character {
     float xspeed;
     float yspeed;
     float size;
-    int health;
+    float maxHealth;
+    float health;
     int healthDelay = 100;
     int lastDamage = millis();
     int animDelay = 150;
     int lastAnim = millis();
     PImage sprite = loadImage("nave.png");
 
-    Character(float x, float y, float xspeed, float yspeed, float size, int health) {
+    Character(float x, float y, float xspeed, float yspeed, float size, float maxHealth, float health) {
         this.x = x;
         this.y = y;
         this.xspeed = xspeed;
         this.yspeed = yspeed;
         this.size = size;
+        this.maxHealth = maxHealth;
         this.health = health;
     }
 

@@ -2,16 +2,18 @@ class Boss {
     float x;
     float y;
     float size;
-    int health;
+    float maxHealth;
+    float health;
     int healthDelay = 0;
     int lastDamage = millis();
     int bulletDelay = 50;
     int lastShot = millis();
 
-    Boss(float x, float y, float size, int health) {
+    Boss(float x, float y, float size, float maxHealth, float health) {
         this.x = x;
         this.y = y;
         this.size = size;
+        this.maxHealth = maxHealth;
         this.health = health;
     }
 

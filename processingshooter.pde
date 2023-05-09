@@ -39,8 +39,8 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(150,150,6,6,50,100);
-  testBoss = new Boss(width/2, 50, 40, 200);
+  character = new Character(150,150,6,6,50,100,100);
+  testBoss = new Boss(width/2,50,40,200,200);
 
   //background
   images[0]  = loadImage("frame_00_delay-0.1s.gif");
