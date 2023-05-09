@@ -14,7 +14,7 @@ int lastShot = millis();
 //boss bullet stuff
 ArrayList<XBullet> xbullets = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> xbulletsColl = new ArrayList<CollisionCircle>();
-int xbulletDelay = 50;
+int xbulletDelay = 500;
 int xlastShot = millis();
 
 //keypress detections
@@ -94,7 +94,8 @@ void draw(){
     lastShot = millis();
   }
   // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
-  bulletStuff();
+  if (!bullets.isEmpty()) {bulletStuff();}
+  if (!xbullets.isEmpty()) {handleBossBullets();}
 
   //activate other functions
   fps();
@@ -186,7 +187,8 @@ void summonBoss(Boss boss){
   }
   //test bullet summon
   if ((millis() - xlastShot) > xbulletDelay){
-
+    pattern1(boss,15,30,20,1,1,true);
+    xlastShot = millis();
   }
   //display health
   boss.displayHP();
@@ -198,6 +200,33 @@ void fps() {
   textSize(20);
   fill(0,255,0);
   text(str(frameRate),25,25);
+}
+
+//Boss bullet patterns
+void pattern1(Boss boss, float speed, float angleDiff, int size, int repetitions, int cadency, boolean halfed){
+  for (int i = 0; i <= 360/angleDiff; i = i + 1) {
+    XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,(angleDiff*i),size);
+    xbullets.add(b);
+    xbulletsColl.add(new CollisionCircle(b.x, b.y, b.radius));
+  }   
+}
+
+//handle boss bullets for all patterns
+void handleBossBullets() {
+  Iterator<XBullet> i = xbullets.listIterator();
+  Iterator<CollisionCircle> j = xbulletsColl.listIterator();
+  while (i.hasNext() && j.hasNext()) {
+    XBullet b = i.next();
+    CollisionCircle c = j.next();
+    b.draw();
+    c.ypos = b.y;
+    c.xpos = b.x;
+    c.display();
+    if (b.update()) {
+      i.remove();
+      j.remove();
+    }
+  }
 }
 
 //handle amount of bullets and drawing bullets on screen (collisions included)

@@ -16,9 +16,9 @@ class XBullet {
     }
 
     boolean update() {
-        x += cos(angle)*xspeed;
-        y += sin(angle)*yspeed;
-        if (y >= height + 5 || y <= -5) return true;
+        x += cos(radians(angle))*xspeed;
+        y += sin(radians(angle))*yspeed;
+        if (y >= height + 5 || y <= -5 || x >= width + 5 || x <= -5) return true;
         return false;
     }
   
