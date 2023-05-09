@@ -26,22 +26,51 @@ boolean zPressed = false;
 boolean tPressed = false;
 boolean spcPressed = false;
 
+//background
+int numFrames = 16;  // The number of frames in the animation
+int currentFrame = 0;
+PImage[] images = new PImage[numFrames];
+
 void setup(){
   //setup canvas and parameters
   size(1280,720);
-  background(255,255,255);
+  background(0,0,0);
   frameRate(60);
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
   character = new Character(150,150,6,6,50,100);
   testBoss = new Boss(width/2, 50, 40, 200);
+
+  //background
+  images[0]  = loadImage("frame_00_delay-0.1s.gif");
+  images[1]  = loadImage("frame_01_delay-0.1s.gif"); 
+  images[2]  = loadImage("frame_02_delay-0.1s.gif");
+  images[3]  = loadImage("frame_03_delay-0.1s.gif"); 
+  images[4]  = loadImage("frame_04_delay-0.1s.gif");
+  images[5]  = loadImage("frame_05_delay-0.1s.gif"); 
+  images[6]  = loadImage("frame_06_delay-0.1s.gif");
+  images[7]  = loadImage("frame_07_delay-0.1s.gif"); 
+  images[8]  = loadImage("frame_08_delay-0.1s.gif");
+  images[9]  = loadImage("frame_09_delay-0.1s.gif"); 
+  images[10] = loadImage("frame_10_delay-0.1s.gif");
+  images[11] = loadImage("frame_11_delay-0.1s.gif");
+  images[12]  = loadImage("frame_12_delay-0.1s.gif");
+  images[13]  = loadImage("frame_13_delay-0.1s.gif"); 
+  images[14] = loadImage("frame_14_delay-0.1s.gif");
+  images[15] = loadImage("frame_15_delay-0.1s.gif");
 }
 
 void draw(){
   //cls
-  background(255,255,255);
-
+  
+  background(0);
+  currentFrame = (currentFrame+1) % numFrames;  // Use % to cycle through frames
+  int offset = 0;
+  for (int x = -100; x < width; x += images[0].width) { 
+    image(images[(currentFrame+offset) % numFrames], x, 0);
+    offset+=2;
+  }
   //game over if character dead
   if (character.isDead()) {
     noLoop();

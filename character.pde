@@ -59,5 +59,10 @@ class Character {
         textSize(20);
         fill(255,0,0);
         text(str(health),width-50, 20);
+        //health bar
+        strokeWeight(5);
+        stroke(250, 250, 250);
+        fill(0, 255, 0);
+        rect(character.x - 10, character.y + 55, health / 1.5, 10, 20);
     }
 }

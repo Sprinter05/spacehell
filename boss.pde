@@ -32,5 +32,9 @@ class Boss {
         textSize(20);
         fill(160,30,240);
         text(str(health),width-50, 40);
+        //health bar
+        strokeWeight(5);
+        stroke(255, 255, 255);
+        rect(1200, 700, 20, -health * 3.2, 20);
     }
 }
