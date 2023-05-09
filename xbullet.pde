@@ -5,14 +5,19 @@ class XBullet {
     float yspeed;
     float angle;
     float radius;
+    float delay;
+    float lastDelay = millis();
+    float[] bullColor;
 
-    XBullet(float x, float y, float xspeed, float yspeed, float angle, float radius){
+    XBullet(float x, float y, float xspeed, float yspeed, float angle, float radius, float delay, float[] bullColor){
         this.x = x;
         this.y = y;
         this.xspeed = xspeed;
         this.yspeed = yspeed;
         this.angle = angle;
         this.radius = radius;
+        this.delay = delay;
+        this.bullColor = bullColor;
     }
 
     boolean update() {
@@ -23,9 +28,11 @@ class XBullet {
     }
   
     void draw() {
-        fill(255,0,0);
-        strokeWeight(0);
-        stroke(255,255,0);
-        ellipse(x,y,radius,radius);
+        if(millis() - lastDelay > delay) {
+            fill(bullColor[0],bullColor[1],bullColor[2]);
+            strokeWeight(0);
+            stroke(255,255,0);
+            ellipse(x,y,radius,radius);
+        }
     }
 }

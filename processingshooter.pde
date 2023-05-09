@@ -14,8 +14,8 @@ int lastShot = millis();
 //boss bullet stuff
 ArrayList<XBullet> xbullets = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> xbulletsColl = new ArrayList<CollisionCircle>();
-int xbulletDelay = 500;
-int xlastShot = millis();
+float xbulletDelay;
+float xlastShot = millis();
 
 //keypress detections
 boolean wPressed = false;
@@ -39,7 +39,7 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(150,150,6,6,50,100,100);
+  character = new Character(150,150,6,6,45,100,100);
   testBoss = new Boss(width/2,50,40,200,200);
 
   //background
@@ -62,21 +62,22 @@ void setup(){
 }
 
 void draw(){
-  //cls
-  
-  background(0);
+  background(0); //cls
+
+  //Animation stuff
   currentFrame = (currentFrame+1) % numFrames;  // Use % to cycle through frames
   int offset = 0;
   for (int x = -100; x < width; x += images[0].width) { 
     image(images[(currentFrame+offset) % numFrames], x, 0);
     offset+=2;
   }
+
   //game over if character dead
   if (character.isDead()) {
     noLoop();
     textFont(cambria);
     textSize(30);
-    fill(0,0,0);
+    fill(255,255,255);
     text("> GAME OVER <",width/2-200,30);
   }
 
@@ -107,7 +108,7 @@ void summonCharacter(Character character){
   character.display();
   character.move();
   //create own collision
-  float sizeMult = 5;
+  float sizeMult = -2;
   CollisionBox charCollision = new CollisionBox(character.x - (sizeMult/2), character.y - (sizeMult/2), character.size + sizeMult, character.size + sizeMult);
   charCollision.display();
   //collision with boss bullets
@@ -129,9 +130,6 @@ void summonCharacter(Character character){
       if (millis() - character.lastDamage > character.healthDelay) {
         character.health -= 1;
         character.lastDamage = millis();
-        if (character.isDead()){
-
-        }
       }
       i.remove();
       j.remove();
@@ -177,17 +175,16 @@ void summonBoss(Boss boss){
       if (millis() - boss.lastDamage > boss.healthDelay) {
         boss.health -= 1;
         boss.lastDamage = millis();
-        if (boss.isDead()){
-
-        }
       }
       i.remove();
       j.remove();
     }
   }
   //test bullet summon
+  xbulletDelay=random(300,1000);
   if ((millis() - xlastShot) > xbulletDelay){
-    pattern1(boss,15,30,20,1,1,true);
+    float[] colors = {random(100,255),random(100,255),random(100,255)};
+    pattern1(boss,random(10,15),15*random(1,4),10*random(1,3),360,15*random(0,3),colors);
     xlastShot = millis();
   }
   //display health
@@ -203,9 +200,9 @@ void fps() {
 }
 
 //Boss bullet patterns
-void pattern1(Boss boss, float speed, float angleDiff, int size, int repetitions, int cadency, boolean halfed){
-  for (int i = 0; i <= 360/angleDiff; i = i + 1) {
-    XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,(angleDiff*i),size);
+void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngle, float startingAngle, float[] bullColor){
+  for (int i = 0; i <= maxAngle/angleDiff; i = i + 1) {
+    XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,startingAngle + (angleDiff*i),size,20,bullColor);
     xbullets.add(b);
     xbulletsColl.add(new CollisionCircle(b.x, b.y, b.radius));
   }   
@@ -277,7 +274,7 @@ void keyPressed() {
       noLoop();
       textFont(cambria);
       textSize(30);
-      fill(0,0,0);
+      fill(255,255,255);
       text("> PAUSE <",width/2-100,30);
     }
   }
