@@ -27,12 +27,12 @@ class Character {
         strokeWeight(0);
         stroke(0,0,0);
         image(sprite,x,y,size,size);
-    }
-    void displayConc(){
-        fill(0,0,0,0);
-        strokeWeight(2);
-        stroke(0,0,255);
-        ellipse(x+size/2, y+size/2, size, size);
+        if (xPressed) { //concentration mode
+            fill(0,0,0,0);
+            strokeWeight(2);
+            stroke(0,0,255);
+            ellipse(x+size/2, y+size/2, size, size);
+        }
     }
 
     void move(){

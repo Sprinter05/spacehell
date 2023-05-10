@@ -113,8 +113,6 @@ void summonCharacter(Character character){
   //appear and move
   character.display();
   character.move();
-  //handle showing concentrate
-  if (xPressed) {character.displayConc();}
   //create own collision
   float sizeMult = -2;
   CollisionBox charCollision = new CollisionBox(character.x - (sizeMult/2), character.y - (sizeMult/2), character.size + sizeMult, character.size + sizeMult);
