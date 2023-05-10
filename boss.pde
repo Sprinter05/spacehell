@@ -8,13 +8,15 @@ class Boss {
     int lastDamage = millis();
     int bulletDelay = 50;
     int lastShot = millis();
+    int pOrder[];
 
-    Boss(float x, float y, float size, float maxHealth, float health) {
+    Boss(float x, float y, float size, float maxHealth, float health, int pOrder[]) {
         this.x = x;
         this.y = y;
         this.size = size;
         this.maxHealth = maxHealth;
         this.health = health;
+        this.pOrder = pOrder;
     }
 
     void display(){
