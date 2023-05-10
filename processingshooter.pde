@@ -232,7 +232,7 @@ void pattern2(float speed, float rows, float size, float delay; float[] bullColo
 }*/
 
 //handle boss bullets for pattern 1
-void handlePattern() {
+void handlePattern1() {
   Iterator<XBullet> i = pattern1.listIterator();
   Iterator<CollisionCircle> j = pattern1Coll.listIterator();
   while (i.hasNext() && j.hasNext()) {
