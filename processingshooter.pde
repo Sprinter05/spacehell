@@ -8,7 +8,7 @@ Boss bossOne;
 //bullet stuff
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 ArrayList<CollisionBox> bulletsColl = new ArrayList<CollisionBox>();
-int bulletDelay = 50;
+int bulletDelay = 100;
 int lastShot = millis();
 
 //boss bullet stuff
@@ -43,7 +43,7 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(150,150,6,4,40,100,100);
+  character = new Character(width/2,height/2,6,4,40,100,100);
   int[] patterns = {1,1,1};
   bossOne = new Boss(width/2,50,40,200,200,patterns);
 
@@ -94,7 +94,7 @@ void draw(){
   
   //bullet activation and bullet functions
   if (zPressed && (millis() - lastShot) > bulletDelay){
-    Bullet b = new Bullet(character.x + character.size/2, character.y -15,15,5);
+    Bullet b = new Bullet(character.x + character.size/3, character.y -15,15,15);
     bullets.add(b);
     bulletsColl.add(new CollisionBox(b.x - b.radius/2, b.y - b.radius/2, b.radius,b.radius));
     lastShot = millis();
@@ -197,8 +197,8 @@ void summonBoss(Boss boss){
   //summon patterns
   p1Delay = random(600,1000);
   if ((millis() - lastP1) > p1Delay && !canP2){
-    float[] colors = {random(100,255),random(100,255),random(100,255)};
-    pattern1(boss,random(10,15),15*random(1,4),10*random(1,3),360,15*random(0,3),colors);
+    float[] colors = {random(100,256),random(100,256),random(100,256)};
+    pattern1(boss,random(10,16),15*random(1,5),10*random(2,4),360,15*random(0,4),colors);
     lastP1 = millis();
   }
   p2Delay = random(6000,12000);
@@ -207,8 +207,8 @@ void summonBoss(Boss boss){
     else {canP2 = true;}
     lastP2 = millis();    
   }
-  float[] colors = {random(100,255),random(100,255),random(100,255)};
-  if (canP2) {pattern2(15,1,20,250,colors);}
+  float[] colors = {random(100,256),random(100,256),random(100,256)};
+  if (canP2) {pattern2(random(10,16),10*random(2,4),random(100,200),colors);}
   //display health
   boss.displayHP();
 }
@@ -231,21 +231,11 @@ void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngl
 }
 
 float p2IntDelay = millis();
-void pattern2(float speed, int side, float size, float delay, float[] bullColor){
-  int startX, spdFactor;
-  if(side == 0) {
-    startX = 0;
-    spdFactor = 1;
-  } else {
-    startX = width;
-    spdFactor = -1;
-  };
-  if ((millis() - p2IntDelay) > delay) {
-    for (int i = 0; i <= 2; i = i + 1) {
-      XBullet b = new XBullet(startX,height/3+(random(150,350)*i),spdFactor*speed,spdFactor*speed,0,size,0,bullColor);
-      pattern2.add(b);
-      pattern2Coll.add(new CollisionCircle(b.x, b.y, b.radius));
-    }
+void pattern2(float speed, float size, float delay, float[] bullColor){
+ if ((millis() - p2IntDelay) > delay) {
+    XBullet b = new XBullet(random(0,width),0,speed*-1,speed*-1,-90,size,0,bullColor);
+    pattern2.add(b);
+    pattern2Coll.add(new CollisionCircle(b.x, b.y, b.radius));
     p2IntDelay = millis();
   }
 }

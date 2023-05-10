@@ -8,6 +8,7 @@ class XBullet {
     float delay;
     float lastDelay = millis();
     float[] bullColor;
+    PImage sprite = loadImage("bossBullet.png");
 
     XBullet(float x, float y, float xspeed, float yspeed, float angle, float radius, float delay, float[] bullColor){
         this.x = x;
@@ -29,10 +30,12 @@ class XBullet {
   
     void draw() {
         if(millis() - lastDelay > delay) {
-            fill(bullColor[0],bullColor[1],bullColor[2]);
+            fill(0,0,0);
             strokeWeight(0);
             stroke(255,255,0);
-            ellipse(x,y,radius,radius);
+            tint(bullColor[0],bullColor[1],bullColor[2]);
+            image(sprite,x,y,radius,radius);
+            noTint();
         }
     }
 }

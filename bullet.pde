@@ -3,6 +3,7 @@ class Bullet {
     float y;
     float yspeed;
     float radius;
+    PImage sprite = loadImage("bullet.png");
 
     Bullet(float x, float y, float yspeed, float radius){
         this.x = x;
@@ -21,6 +22,6 @@ class Bullet {
         fill(255,0,0);
         strokeWeight(0);
         stroke(255,255,0);
-        ellipse(x,y,radius,radius);
+        image(sprite,x,y,radius,radius);
     }
 }
