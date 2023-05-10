@@ -26,6 +26,7 @@ boolean dPressed = false;
 boolean sPressed = false;
 boolean aPressed = false;
 boolean zPressed = false;
+boolean xPressed = false;
 boolean tPressed = false;
 boolean spcPressed = false;
 
@@ -42,7 +43,7 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(150,150,6,6,45,100,100);
+  character = new Character(150,150,6,4,40,100,100);
   int[] patterns = {1,1,1};
   bossOne = new Boss(width/2,50,40,200,200,patterns);
 
@@ -100,7 +101,8 @@ void draw(){
   }
   // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
   if (!bullets.isEmpty()) {bulletStuff();}
-  if (!pattern1.isEmpty()) {handlePattern1();}
+  if (!pattern1.isEmpty()) {handlePattern(pattern1, pattern1Coll);}
+  if (!pattern2.isEmpty()) {handlePattern(pattern2, pattern2Coll);}
 
   //activate other functions
   fps();
@@ -111,13 +113,36 @@ void summonCharacter(Character character){
   //appear and move
   character.display();
   character.move();
+  //handle showing concentrate
+  if (xPressed) {character.displayConc();}
   //create own collision
   float sizeMult = -2;
   CollisionBox charCollision = new CollisionBox(character.x - (sizeMult/2), character.y - (sizeMult/2), character.size + sizeMult, character.size + sizeMult);
   charCollision.display();
-  //collision with boss bullets
-  Iterator<XBullet> i = pattern1.listIterator();
-  Iterator<CollisionCircle> j = pattern1Coll.listIterator();
+  //call method for collision with boss bullets
+  handleCharacterCollisions(charCollision, pattern1, pattern1Coll);
+  handleCharacterCollisions(charCollision, pattern2, pattern2Coll);
+  //collision with edges
+  if (charCollision.xpos < 0) {
+    character.x = 0;
+  }
+  if (charCollision.ypos < 0) {
+    character.y = 0;
+  }
+  if (charCollision.xpos > width - character.size) {
+    character.x = width - character.size;
+  }
+  if (charCollision.ypos > height - character.size) {
+    character.y = height - character.size;
+  }
+  //display health
+  character.displayHP();
+}
+
+//collision with boss bullets
+void handleCharacterCollisions(CollisionBox charCollision, ArrayList<XBullet> pattern, ArrayList<CollisionCircle> coll){
+  Iterator<XBullet> i = pattern.listIterator();
+  Iterator<CollisionCircle> j = coll.listIterator();
   while (i.hasNext()){
     XBullet b = i.next();
     CollisionCircle c = j.next();
@@ -139,21 +164,6 @@ void summonCharacter(Character character){
       j.remove();
     }
   }
-  //collision with edges
-  if (charCollision.xpos < 0) {
-    character.x = 0;
-  }
-  if (charCollision.ypos < 0) {
-    character.y = 0;
-  }
-  if (charCollision.xpos > width - character.size) {
-    character.x = width - character.size;
-  }
-  if (charCollision.ypos > height - character.size) {
-    character.y = height - character.size;
-  }
-  //display health
-  character.displayHP();
 }
 
 //handle boss
@@ -184,21 +194,21 @@ void summonBoss(Boss boss){
       j.remove();
     }
   }
-  //test bullet summon
+  //summon patterns
   p1Delay = random(600,1000);
-  if ((millis() - lastP1) > p1Delay){
+  if ((millis() - lastP1) > p1Delay && !canP2){
     float[] colors = {random(100,255),random(100,255),random(100,255)};
     pattern1(boss,random(10,15),15*random(1,4),10*random(1,3),360,15*random(0,3),colors);
     lastP1 = millis();
   }
-  /*p2Delay = random(1500,3000);
+  p2Delay = random(6000,12000);
   if ((millis() - lastP2) > p2Delay) {
     if (canP2) {canP2 = false;}
     else {canP2 = true;}
     lastP2 = millis();    
   }
   float[] colors = {random(100,255),random(100,255),random(100,255)};
-  if (canP2) {pattern2();}*/
+  if (canP2) {pattern2(15,1,20,250,colors);}
   //display health
   boss.displayHP();
 }
@@ -220,21 +230,30 @@ void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngl
   }   
 }
 
-/*float p2IntDelay = millis();
-void pattern2(float speed, float rows, float size, float delay; float[] bullColor){
+float p2IntDelay = millis();
+void pattern2(float speed, int side, float size, float delay, float[] bullColor){
+  int startX, spdFactor;
+  if(side == 0) {
+    startX = 0;
+    spdFactor = 1;
+  } else {
+    startX = width;
+    spdFactor = -1;
+  };
   if ((millis() - p2IntDelay) > delay) {
     for (int i = 0; i <= 2; i = i + 1) {
-      XBullet b = new XBullet(height/2 + (i/3 * height), 0, speed,speed,0,size,0,bullColor);
+      XBullet b = new XBullet(startX,height/3+(random(150,350)*i),spdFactor*speed,spdFactor*speed,0,size,0,bullColor);
       pattern2.add(b);
       pattern2Coll.add(new CollisionCircle(b.x, b.y, b.radius));
     }
+    p2IntDelay = millis();
   }
-}*/
+}
 
 //handle boss bullets for pattern 1
-void handlePattern1() {
-  Iterator<XBullet> i = pattern1.listIterator();
-  Iterator<CollisionCircle> j = pattern1Coll.listIterator();
+void handlePattern(ArrayList<XBullet> pattern, ArrayList<CollisionCircle> collisions) {
+  Iterator<XBullet> i = pattern.listIterator();
+  Iterator<CollisionCircle> j = collisions.listIterator();
   while (i.hasNext() && j.hasNext()) {
     XBullet b = i.next();
     CollisionCircle c = j.next();
@@ -281,6 +300,9 @@ void keyPressed() {
   if (key == 'z') {
     zPressed = true;
   }
+  if (key == 'x') {
+    xPressed = true;
+  }
   if (key == 't') {
     if (tPressed) {
       tPressed = false;
@@ -314,5 +336,8 @@ void  keyReleased () {
   }
   if (key == 'z') {
     zPressed = false;
+  }
+  if (key == 'x') {
+    xPressed = false;
   }
 }

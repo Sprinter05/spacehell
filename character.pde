@@ -1,8 +1,8 @@
 class Character {
     float x;
     float y;
-    float xspeed;
-    float yspeed;
+    float speed;
+    float concSpeed;
     float size;
     float maxHealth;
     float health;
@@ -12,11 +12,11 @@ class Character {
     int lastAnim = millis();
     PImage sprite = loadImage("nave.png");
 
-    Character(float x, float y, float xspeed, float yspeed, float size, float maxHealth, float health) {
+    Character(float x, float y, float speed, float concSpeed, float size, float maxHealth, float health) {
         this.x = x;
         this.y = y;
-        this.xspeed = xspeed;
-        this.yspeed = yspeed;
+        this.speed = speed;
+        this.concSpeed = concSpeed;
         this.size = size;
         this.maxHealth = maxHealth;
         this.health = health;
@@ -28,20 +28,33 @@ class Character {
         stroke(0,0,0);
         image(sprite,x,y,size,size);
     }
+    void displayConc(){
+        fill(0,0,0,0);
+        strokeWeight(2);
+        stroke(0,0,255);
+        ellipse(x+size/2, y+size/2, size, size);
+    }
+
     void move(){
+        float speedtoUse;
+        if (xPressed){
+            speedtoUse = concSpeed;
+        } else {
+            speedtoUse = speed;
+        }
         float currx = x;
         float curry = y;
         if (aPressed){
-            x -= xspeed;
+            x -= speedtoUse;
         }
         if (dPressed){
-            x += xspeed;
+            x += speedtoUse;
         }
         if (wPressed){
-            y -= yspeed;
+            y -= speedtoUse;
         }
         if (sPressed){
-            y += yspeed;
+            y += speedtoUse;
         }
         //Animation thingy
         if (x == currx && y == curry && (millis() - lastAnim) > animDelay){
