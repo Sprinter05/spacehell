@@ -38,7 +38,8 @@ class Boss {
         fill(255,255,255);
         stroke(255, 255, 255);
         rect(1200, 700, 20, -maxHealth / hbbd, 20);
-        fill(160,30,240);
+        if (pattern5Shield.isEmpty()) {fill(160,30,240);}
+        else {fill(200,200,200);}
         stroke(255, 255, 255);
         rect(1200, 700, 20, -health / hbbd, 20);
     }

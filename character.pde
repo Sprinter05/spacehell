@@ -75,9 +75,9 @@ class Character {
         strokeWeight(3);
         stroke(250, 250, 250);
         fill(255, 255, 255);
-        rect(character.x - 12, character.y + 55, maxHealth / hbcd, 10, 20);
+        rect(x - 12, y + 55, maxHealth / hbcd, 10, 20);
         stroke(250, 250, 250);
         fill(0, 255, 0);
-        rect(character.x - 12, character.y + 55, health / hbcd, 10, 20);
+        rect(x - 12, y + 55, health / hbcd, 10, 20);
     }
 }

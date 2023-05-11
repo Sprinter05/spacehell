@@ -24,10 +24,11 @@ ArrayList<CollisionCircle> pattern3Coll = new ArrayList<CollisionCircle>();
 ArrayList<XBullet> pattern4 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern4Coll = new ArrayList<CollisionCircle>();
 ArrayList<Bomb> pattern4Bomb = new ArrayList<Bomb>();
+ArrayList<Shield> pattern5Shield = new ArrayList<Shield>();
 float p1Delay, p2Delay, p3Delay, p4Delay, p5Delay;
 float p2Duration, p3Duration;
 float lastP1, lastP2, lastP3, lastP4, lastP5 = millis();
-boolean canP2, canP3 = false;
+boolean canP2, canP3, canP5 = false;
 float[] p2colors = new float[3];
 float[] p3colors = new float[3];
 float[] p4colors = new float[3];
@@ -61,23 +62,10 @@ void setup(){
   int[] patterns = {1,1,1};
   bossOne = new Boss(width/2,50,40,200,200,patterns);
 
-  //background
-  images[0]  = loadImage("frame_00_delay-0.1s.gif");
-  images[1]  = loadImage("frame_01_delay-0.1s.gif"); 
-  images[2]  = loadImage("frame_02_delay-0.1s.gif");
-  images[3]  = loadImage("frame_03_delay-0.1s.gif"); 
-  images[4]  = loadImage("frame_04_delay-0.1s.gif");
-  images[5]  = loadImage("frame_05_delay-0.1s.gif"); 
-  images[6]  = loadImage("frame_06_delay-0.1s.gif");
-  images[7]  = loadImage("frame_07_delay-0.1s.gif"); 
-  images[8]  = loadImage("frame_08_delay-0.1s.gif");
-  images[9]  = loadImage("frame_09_delay-0.1s.gif"); 
-  images[10] = loadImage("frame_10_delay-0.1s.gif");
-  images[11] = loadImage("frame_11_delay-0.1s.gif");
-  images[12]  = loadImage("frame_12_delay-0.1s.gif");
-  images[13]  = loadImage("frame_13_delay-0.1s.gif"); 
-  images[14] = loadImage("frame_14_delay-0.1s.gif");
-  images[15] = loadImage("frame_15_delay-0.1s.gif");
+  //load background images
+  for (int i = 0; i < 16; i += 1){
+    images[i] = loadImage("f"+i+".gif");
+  }
 }
 
 void draw(){
@@ -122,6 +110,7 @@ void draw(){
   if (!pattern3.isEmpty()) {handlePattern(pattern3, pattern3Coll);}
   if (!pattern4Bomb.isEmpty()) {pattern4(pattern4Bomb);}
   if (!pattern4.isEmpty()) {handlePattern(pattern4, pattern4Coll);}
+  if (!pattern5Shield.isEmpty()) {pattern5(pattern5Shield);}
 
   //activate other functions
   fps();
@@ -207,7 +196,7 @@ void summonBoss(Boss boss){
       bossCollision.ypos + bossCollision.hei > c.ypos &&
       bossCollision.ypos < c.ypos + bossCollision.hei
     ) {
-      if (millis() - boss.lastDamage > boss.healthDelay) {
+      if (millis() - boss.lastDamage > boss.healthDelay && pattern5Shield.isEmpty()) {
         boss.health -= 1;
         boss.lastDamage = millis();
       }
@@ -267,6 +256,16 @@ void summonBoss(Boss boss){
     pattern4Bomb.add(bomb);
     lastP4 = millis();
   }
+  //pattern 5
+  p5Delay = random(30000,70000);
+  if((millis() - lastP5) > p5Delay && !canP5){
+    Shield shield1 = new Shield(boss.x - 200, boss.y, 3, 50, 50);
+    Shield shield2 = new Shield(boss.x + 200, boss.y, 3, 50, 50);
+    pattern5Shield.add(shield1);
+    pattern5Shield.add(shield2);
+    canP5 = true;
+  }
+  if (pattern5Shield.isEmpty()) {canP5 = false;}
   //display health
   boss.displayHP();
 }
@@ -325,7 +324,25 @@ void pattern4(ArrayList<Bomb> bombs){
   }
 }
 
-//handle boss bullets for pattern 1
+//pattern 5
+void pattern5(ArrayList<Shield> shields){
+  Iterator<Shield> i = shields.listIterator();
+  while(i.hasNext()){
+    Shield s = i.next();
+    CollisionBox c = new CollisionBox(s.x,s.y,s.sizeX,s.sizeY);
+    handleShieldCollision(s,c);
+    s.draw();
+    s.update();
+    c.display();
+    s.displayHP();
+    if (s.isDead()){
+      i.remove();
+      lastP5 = millis();
+    }
+  }
+}
+
+//handle boss bullets for patterns
 void handlePattern(ArrayList<XBullet> pattern, ArrayList<CollisionCircle> collisions) {
   Iterator<XBullet> i = pattern.listIterator();
   Iterator<CollisionCircle> j = collisions.listIterator();
@@ -337,6 +354,28 @@ void handlePattern(ArrayList<XBullet> pattern, ArrayList<CollisionCircle> collis
     c.xpos = b.x + b.radius/2;
     c.display();
     if (b.update()) {
+      i.remove();
+      j.remove();
+    }
+  }
+}
+
+void handleShieldCollision(Shield shield, CollisionBox sc){
+  Iterator<Bullet> i = bullets.listIterator();
+  Iterator<CollisionBox> j = bulletsColl.listIterator();
+  while (i.hasNext()){
+    Bullet b = i.next();
+    CollisionBox c = j.next();
+    if (
+      sc.xpos + sc.wid > c.xpos && 
+      sc.xpos < c.xpos + c.wid &&
+      sc.ypos + sc.hei > c.ypos &&
+      sc.ypos < c.ypos + sc.hei
+    ) {
+      if (millis() - shield.lastDamage > shield.healthDelay) {
+        shield.health -= 1;
+        shield.lastDamage = millis();
+      }
       i.remove();
       j.remove();
     }

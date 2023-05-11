@@ -51,5 +51,13 @@ class Bomb {
         strokeWeight(0);
         stroke(255,255,0);
         ellipse(x,y,40,40);
+        fill(255,0,0);
+        strokeWeight(0);
+        stroke(255,0,0);
+        ellipse(x,y,30,30);
+        fill(255,140,0);
+        strokeWeight(0);
+        stroke(255,140,0);
+        ellipse(x,y,20,20);
     }
 }
