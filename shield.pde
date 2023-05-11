@@ -6,7 +6,7 @@ class Shield {
     float health;
     float sizeX = 40;
     float sizeY = 80;
-    int healthDelay = 0;
+    int healthDelay = 50;
     int lastDamage = millis();
     int animDelay = 150;
     int lastAnim = millis();
@@ -36,8 +36,8 @@ class Shield {
     void update(){
         //Animation thingy
         if ((millis() - lastAnim) > animDelay){
-            x += random(-1,1);
-            y += random(-1,1);
+            x += random(-1,2);
+            y += random(-1,2);
             lastAnim = millis();
         }
     }

@@ -59,8 +59,8 @@ class Character {
         }
         //Animation thingy
         if (x == currx && y == curry && (millis() - lastAnim) > animDelay){
-            x += random(-1,1);
-            y += random(-1,1);
+            x += random(-1,2);
+            y += random(-1,2);
             lastAnim = millis();
         }
     }

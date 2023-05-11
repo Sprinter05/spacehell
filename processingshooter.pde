@@ -14,6 +14,11 @@ ArrayList<CollisionBox> bulletsColl = new ArrayList<CollisionBox>();
 int bulletDelay = 100;
 int lastShot = millis();
 
+//health ball stuff
+ArrayList<HealthBall> hpballs = new ArrayList<HealthBall>();
+float hpballDelay;
+float lasthpBall = millis();
+
 //pattern stuff
 ArrayList<XBullet> pattern1 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern1Coll = new ArrayList<CollisionCircle>();
@@ -25,9 +30,11 @@ ArrayList<XBullet> pattern4 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern4Coll = new ArrayList<CollisionCircle>();
 ArrayList<Bomb> pattern4Bomb = new ArrayList<Bomb>();
 ArrayList<Shield> pattern5Shield = new ArrayList<Shield>();
-float p1Delay, p2Delay, p3Delay, p4Delay, p5Delay;
+ArrayList<XBullet> pattern6 = new ArrayList<XBullet>();
+ArrayList<CollisionCircle> pattern6Coll = new ArrayList<CollisionCircle>();
+float p1Delay, p2Delay, p3Delay, p4Delay, p5Delay, p6Delay;
 float p2Duration, p3Duration;
-float lastP1, lastP2, lastP3, lastP4, lastP5 = millis();
+float lastP1, lastP2, lastP3, lastP4, lastP5, lastP6 = millis();
 boolean canP2, canP3, canP5 = false;
 float[] p2colors = new float[3];
 float[] p3colors = new float[3];
@@ -98,6 +105,14 @@ void draw(){
     lastShot = millis();
   }
 
+  //health ball
+  hpballDelay = random(25000,35000);
+  if (millis() - lasthpBall > hpballDelay && hpballs.isEmpty()){
+    HealthBall hpb = new HealthBall(random(0,width-150),random(0, height/2),2,50,random(15,25),random(40,60),random(15000,20000));
+    hpballs.add(hpb);
+  }
+  if (!hpballs.isEmpty()) {handlehpBalls();}
+
   //handle some functions
   if (!bullets.isEmpty()) {bulletStuff();}
   if (!pattern1.isEmpty()) {handlePattern(pattern1, pattern1Coll);}
@@ -106,6 +121,7 @@ void draw(){
   if (!pattern4Bomb.isEmpty()) {pattern4(pattern4Bomb);}
   if (!pattern4.isEmpty()) {handlePattern(pattern4, pattern4Coll);}
   if (!pattern5Shield.isEmpty()) {pattern5(pattern5Shield);}
+  if (!pattern6.isEmpty()) {handlePattern(pattern6, pattern6Coll);}
 
   //activate other functions
   if (!gameStart) {startText();}
@@ -127,6 +143,7 @@ void summonCharacter(Character character){
   handleCharacterCollisions(charCollision, pattern2, pattern2Coll);
   handleCharacterCollisions(charCollision, pattern3, pattern3Coll);
   handleCharacterCollisions(charCollision, pattern4, pattern4Coll);
+  handleCharacterCollisions(charCollision, pattern6, pattern6Coll);
   //collision with edges
   if (charCollision.xpos < 0) {
     character.x = 0;
@@ -247,7 +264,7 @@ void summonBoss(Boss boss){
   p4Delay = random(3000,5000);
   if((millis() - lastP4) > p4Delay && !canP2){
     float[] p4colors = {random(100,256),random(100,256),random(100,256)};
-    Bomb bomb = new Bomb(random(100,width-100),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
+    Bomb bomb = new Bomb(random(100,width-150),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
     pattern4Bomb.add(bomb);
     lastP4 = millis();
   }
@@ -261,6 +278,7 @@ void summonBoss(Boss boss){
     canP5 = true;
   }
   if (pattern5Shield.isEmpty()) {canP5 = false;}
+  //pattern 6
   //display health
   boss.displayHP();
 }
@@ -377,6 +395,55 @@ void handleShieldCollision(Shield shield, CollisionBox sc){
   }
 }
 
+void handlehpBalls(){
+  Iterator<HealthBall> i = hpballs.listIterator();
+  if (i.hasNext()){
+    HealthBall hpb = i.next();
+    CollisionCircle c = new CollisionCircle(hpb.x,hpb.y,hpb.size);
+    handlehpBallCollision(hpb,c);
+    hpb.display();
+    c.display();
+    hpb.move();
+    if (hpb.isDespawned() || hpb.isDead()){
+      i.remove();
+      lasthpBall = millis();
+    }
+  }
+}
+
+void handlehpBallCollision(HealthBall hpb, CollisionCircle hpbc){
+  Iterator<Bullet> i = bullets.listIterator();
+  Iterator<CollisionBox> j = bulletsColl.listIterator();
+  while (i.hasNext()){
+    Bullet b = i.next();
+    CollisionBox c = j.next();
+    float checkX = hpbc.xpos;
+    float checkY = hpbc.ypos;
+    if (hpbc.xpos < c.xpos) {checkX = c.xpos;}
+    else if (hpbc.xpos > c.xpos + c.wid) {checkX = c.xpos + c.wid;}
+    if (hpbc.ypos < c.ypos) {checkY = c.ypos;}
+    else if (hpbc.ypos > c.ypos + c.hei) {checkY = c.ypos + c.hei;}
+    float distX = hpbc.xpos - checkX;
+    float distY = hpbc.ypos - checkY;
+    float distance = sqrt((distX*distX) + (distY*distY));
+    if (distance <= hpbc.radius) {
+      if (millis() - hpb.lastDamage > hpb.healthDelay) {
+        hpb.health -= 1;
+        hpb.lastDamage = millis();
+        if (hpb.isDead()){
+          if (character.health + hpb.hpRecover >= character.maxHealth){
+            character.health = character.maxHealth;
+          } else {
+            character.health += hpb.hpRecover;
+          }
+        }
+      }
+      i.remove();
+      j.remove();
+    }
+  }
+}
+
 //handle amount of bullets and drawing bullets on screen (collisions included)
 void bulletStuff() {
   Iterator<Bullet> i = bullets.listIterator();
@@ -455,6 +522,7 @@ void keyPressed() {
   if (key == ' ') {
     if (spcPressed) {
       spcPressed = false;
+      lastP1 = lastP2 = lastP3 = lastP4 = lastP5 = millis();
       loop();
     } else {
       spcPressed = true;
