@@ -5,6 +5,9 @@ PFont cambria;
 Character character;
 Boss bossOne;
 
+//check game start
+boolean gameStart = false;
+
 //bullet stuff
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 ArrayList<CollisionBox> bulletsColl = new ArrayList<CollisionBox>();
@@ -96,14 +99,14 @@ void draw(){
   //summon character
   if (!character.isDead()) summonCharacter(character);
 
-  //summon test boss
-  if (!bossOne.isDead()) summonBoss(bossOne);
+  //summon boss
+  if (!bossOne.isDead() && gameStart) summonBoss(bossOne);
   
   //bullet activation and bullet functions
   if (zPressed && (millis() - lastShot) > bulletDelay){
     Bullet b = new Bullet(character.x + character.size/3, character.y -15,15,15);
     bullets.add(b);
-    bulletsColl.add(new CollisionBox(b.x - b.radius/2, b.y - b.radius/2, b.radius,b.radius));
+    bulletsColl.add(new CollisionBox(b.x, b.y, b.radius,b.radius));
     lastShot = millis();
   }
   // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
@@ -114,6 +117,8 @@ void draw(){
 
   //activate other functions
   fps();
+  if (!gameStart) {startText();}
+  if (tPressed) {debugText();}
 }
 
 //handle character
@@ -249,21 +254,13 @@ void summonBoss(Boss boss){
   boss.displayHP();
 }
 
-//fps counter (top left)
-void fps() {
-  textFont(cambria);
-  textSize(20);
-  fill(0,255,0);
-  text(str(frameRate),25,25);
-}
-
 //Boss bullet patterns
 //pattern 1
 void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngle, float startingAngle, float[] bullColor){
   for (int i = 0; i <= maxAngle/angleDiff; i = i + 1) {
     XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,startingAngle + (angleDiff*i),size,20,bullColor);
     pattern1.add(b);
-    pattern1Coll.add(new CollisionCircle(b.x, b.y, b.radius));
+    pattern1Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
   }   
 }
 
@@ -273,7 +270,7 @@ void pattern2(float speed, float size, float delay, float[] bullColor){
  if ((millis() - p2IntDelay) > delay) {
     XBullet b = new XBullet(random(0,width),0,speed*-1,speed*-1,-90,size,0,bullColor);
     pattern2.add(b);
-    pattern2Coll.add(new CollisionCircle(b.x, b.y, b.radius));
+    pattern2Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p2IntDelay = millis();
   }
 }
@@ -284,7 +281,7 @@ void pattern3(Boss boss, float speed, float angleDiff, float size, float startin
  if ((millis() - p3IntDelay) > delay) {
     XBullet b = new XBullet(boss.x-boss.size/2,boss.y-boss.size/2,speed,speed,startingAngle+(angleDiff*p3AngLoop),size,20,bullColor);
     pattern3.add(b);
-    pattern3Coll.add(new CollisionCircle(b.x, b.y, b.radius));
+    pattern3Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p3IntDelay = millis();
     p3AngLoop += 1;
   }
@@ -298,8 +295,8 @@ void handlePattern(ArrayList<XBullet> pattern, ArrayList<CollisionCircle> collis
     XBullet b = i.next();
     CollisionCircle c = j.next();
     b.draw();
-    c.ypos = b.y;
-    c.xpos = b.x;
+    c.ypos = b.y + b.radius/2;
+    c.xpos = b.x + b.radius/2;
     c.display();
     if (b.update()) {
       i.remove();
@@ -316,14 +313,39 @@ void bulletStuff() {
     Bullet b = i.next();
     CollisionBox c = j.next();
     b.draw();
-    c.ypos = b.y - b.radius/2;
-    c.xpos = b.x - b.radius/2;
+    c.ypos = b.y;
+    c.xpos = b.x;
     c.display();
     if (b.update()) {
       i.remove();
       j.remove();
     }
   }
+}
+
+//fps counter (top left)
+void fps() {
+  textFont(cambria);
+  textSize(20);
+  fill(0,255,0);
+  float roundedfps = (round(frameRate * 1000));
+  text(str(roundedfps/1000),25,25);
+}
+
+//start game text
+void startText(){
+  textFont(cambria);
+  textSize(20);
+  fill(255,255,255);
+  text("Press enter to start the game",width/2-100,height-100);
+}
+
+//DEBUG collisions text
+void debugText(){
+  textFont(cambria);
+  textSize(15);
+  fill(255,0,0);
+  text("DEBUG COLLISIONS",width-150,30);
 }
 
 //handle key press and release
@@ -362,6 +384,10 @@ void keyPressed() {
       fill(255,255,255);
       text("> PAUSE <",width/2-100,30);
     }
+  }
+  if (!gameStart && key == ENTER) {
+    gameStart = true;
+    lastP1 = lastP2 = lastP3 = lastP4 = lastP5 = millis();
   }
 }
 void  keyReleased () {
