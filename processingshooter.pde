@@ -32,8 +32,7 @@ boolean canP2, canP3, canP5 = false;
 float[] p2colors = new float[3];
 float[] p3colors = new float[3];
 float[] p4colors = new float[3];
-float delay3, size3, speed3, angDiff3, startAng3;
-float p3AngLoop;
+float delay3, size3, speed3, angDiff3, startAng3, p3AngLoop;
 
 //keypress detections
 boolean wPressed = false;
@@ -58,9 +57,9 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(width/2,height/2,6,4,40,100,100);
+  character = new Character(width/2,height/2,6,4,35,100,100);
   int[] patterns = {1,1,1};
-  bossOne = new Boss(width/2,50,40,200,200,patterns);
+  bossOne = new Boss(width/2,60,70,200,200,patterns);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
@@ -82,10 +81,7 @@ void draw(){
   //game over if character dead
   if (character.isDead()) {
     noLoop();
-    textFont(cambria);
-    textSize(30);
-    fill(255,255,255);
-    text("> GAME OVER <",width/2-200,30);
+    gameOver();
   }
 
   //summon character
@@ -101,7 +97,6 @@ void draw(){
     bulletsColl.add(new CollisionBox(b.x, b.y, b.radius,b.radius));
     lastShot = millis();
   }
-  // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
 
   //handle some functions
   if (!bullets.isEmpty()) {bulletStuff();}
@@ -113,9 +108,9 @@ void draw(){
   if (!pattern5Shield.isEmpty()) {pattern5(pattern5Shield);}
 
   //activate other functions
-  fps();
   if (!gameStart) {startText();}
   if (tPressed) {debugText();}
+  fps();
 }
 
 //handle character
@@ -423,6 +418,14 @@ void debugText(){
   textSize(15);
   fill(255,0,0);
   text("DEBUG COLLISIONS",width-150,30);
+}
+
+//game over text
+void gameOver(){
+  textFont(cambria);
+  textSize(30);
+  fill(255,255,255);
+  text("> GAME OVER <",width/2-200,30);
 }
 
 //handle key press and release
