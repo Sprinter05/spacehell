@@ -11,14 +11,21 @@ ArrayList<CollisionBox> bulletsColl = new ArrayList<CollisionBox>();
 int bulletDelay = 100;
 int lastShot = millis();
 
-//boss bullet stuff
+//pattern stuff
 ArrayList<XBullet> pattern1 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern1Coll = new ArrayList<CollisionCircle>();
 ArrayList<XBullet> pattern2 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern2Coll = new ArrayList<CollisionCircle>();
+ArrayList<XBullet> pattern3 = new ArrayList<XBullet>();
+ArrayList<CollisionCircle> pattern3Coll = new ArrayList<CollisionCircle>();
 float p1Delay, p2Delay, p3Delay, p4Delay, p5Delay;
+float p2Duration, p3Duration;
 float lastP1, lastP2, lastP3, lastP4, lastP5 = millis();
-boolean canP2 = false;
+boolean canP2, canP3 = false;
+float[] p2colors = new float[3];
+float[] p3colors = new float[3];
+float delay3, size3, speed3, angDiff3, startAng3;
+float p3AngLoop;
 
 //keypress detections
 boolean wPressed = false;
@@ -103,6 +110,7 @@ void draw(){
   if (!bullets.isEmpty()) {bulletStuff();}
   if (!pattern1.isEmpty()) {handlePattern(pattern1, pattern1Coll);}
   if (!pattern2.isEmpty()) {handlePattern(pattern2, pattern2Coll);}
+  if (!pattern3.isEmpty()) {handlePattern(pattern3, pattern3Coll);}
 
   //activate other functions
   fps();
@@ -193,20 +201,50 @@ void summonBoss(Boss boss){
     }
   }
   //summon patterns
+  //pattern 1
   p1Delay = random(600,1000);
   if ((millis() - lastP1) > p1Delay && !canP2){
-    float[] colors = {random(100,256),random(100,256),random(100,256)};
-    pattern1(boss,random(10,16),15*random(1,5),10*random(2,4),360,15*random(0,4),colors);
+    float[] p1colors = {random(100,256),random(100,256),random(100,256)};
+    pattern1(boss,random(10,16),15*random(1,5),10*random(2,4),360,15*random(0,4),p1colors);
     lastP1 = millis();
   }
+  //pattern 2
+  p2Duration = random(5000,10000);
   p2Delay = random(6000,12000);
-  if ((millis() - lastP2) > p2Delay) {
-    if (canP2) {canP2 = false;}
-    else {canP2 = true;}
-    lastP2 = millis();    
+  if (canP2 && (millis() - lastP2) > p2Duration) {
+    canP2 = false;
+    lastP2 = millis();
   }
-  float[] colors = {random(100,256),random(100,256),random(100,256)};
-  if (canP2) {pattern2(random(10,16),10*random(2,4),random(100,200),colors);}
+  if (!canP2 && (millis() - lastP2) > p2Delay) {
+    canP2 = true;
+    lastP2 = millis();
+    p2colors[0] = random(100,256);
+    p2colors[1] = random(100,256);
+    p2colors[1] = random(100,256);
+  }
+  if (canP2) {pattern2(random(10,16),10*random(2,4),random(100,200),p2colors);}
+  //pattern 3
+  p3Duration = random(4000,8000);
+  p3Delay = random(5000,70000);
+  
+  if (canP3 && (millis() - lastP3) > p3Duration) {
+    canP3 = false;
+    lastP3 = millis();
+  }
+  if (!canP3 && (millis() - lastP3) > p3Delay) {
+    canP3 = true;
+    lastP3 = millis();
+    p3AngLoop = 0;
+    speed3 = random(10,16);
+    size3 = 10*random(2,4);
+    angDiff3 = 15*random(1,5);
+    startAng3 = 15*random(0,4);
+    delay3 = random(50,200);
+    p3colors[0] = random(100,256);
+    p3colors[1] = random(100,256);
+    p3colors[1] = random(100,256);
+  }
+  if(canP3) {pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);}
   //display health
   boss.displayHP();
 }
@@ -220,6 +258,7 @@ void fps() {
 }
 
 //Boss bullet patterns
+//pattern 1
 void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngle, float startingAngle, float[] bullColor){
   for (int i = 0; i <= maxAngle/angleDiff; i = i + 1) {
     XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,startingAngle + (angleDiff*i),size,20,bullColor);
@@ -228,6 +267,7 @@ void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngl
   }   
 }
 
+//pattern 2
 float p2IntDelay = millis();
 void pattern2(float speed, float size, float delay, float[] bullColor){
  if ((millis() - p2IntDelay) > delay) {
@@ -235,6 +275,18 @@ void pattern2(float speed, float size, float delay, float[] bullColor){
     pattern2.add(b);
     pattern2Coll.add(new CollisionCircle(b.x, b.y, b.radius));
     p2IntDelay = millis();
+  }
+}
+
+//pattern 3
+float p3IntDelay = millis();
+void pattern3(Boss boss, float speed, float angleDiff, float size, float startingAngle, float delay, float[] bullColor){
+ if ((millis() - p3IntDelay) > delay) {
+    XBullet b = new XBullet(boss.x-boss.size/2,boss.y-boss.size/2,speed,speed,startingAngle+(angleDiff*p3AngLoop),size,20,bullColor);
+    pattern3.add(b);
+    pattern3Coll.add(new CollisionCircle(b.x, b.y, b.radius));
+    p3IntDelay = millis();
+    p3AngLoop += 1;
   }
 }
 
