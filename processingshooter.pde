@@ -21,12 +21,16 @@ ArrayList<XBullet> pattern2 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern2Coll = new ArrayList<CollisionCircle>();
 ArrayList<XBullet> pattern3 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern3Coll = new ArrayList<CollisionCircle>();
+ArrayList<XBullet> pattern4 = new ArrayList<XBullet>();
+ArrayList<CollisionCircle> pattern4Coll = new ArrayList<CollisionCircle>();
+ArrayList<Bomb> pattern4Bomb = new ArrayList<Bomb>();
 float p1Delay, p2Delay, p3Delay, p4Delay, p5Delay;
 float p2Duration, p3Duration;
 float lastP1, lastP2, lastP3, lastP4, lastP5 = millis();
 boolean canP2, canP3 = false;
 float[] p2colors = new float[3];
 float[] p3colors = new float[3];
+float[] p4colors = new float[3];
 float delay3, size3, speed3, angDiff3, startAng3;
 float p3AngLoop;
 
@@ -110,10 +114,14 @@ void draw(){
     lastShot = millis();
   }
   // println(str(bulletsColl.size()) + ", " + str(bullets.size())); //DEBUG
+
+  //handle some functions
   if (!bullets.isEmpty()) {bulletStuff();}
   if (!pattern1.isEmpty()) {handlePattern(pattern1, pattern1Coll);}
   if (!pattern2.isEmpty()) {handlePattern(pattern2, pattern2Coll);}
   if (!pattern3.isEmpty()) {handlePattern(pattern3, pattern3Coll);}
+  if (!pattern4Bomb.isEmpty()) {pattern4(pattern4Bomb);}
+  if (!pattern4.isEmpty()) {handlePattern(pattern4, pattern4Coll);}
 
   //activate other functions
   fps();
@@ -133,6 +141,8 @@ void summonCharacter(Character character){
   //call method for collision with boss bullets
   handleCharacterCollisions(charCollision, pattern1, pattern1Coll);
   handleCharacterCollisions(charCollision, pattern2, pattern2Coll);
+  handleCharacterCollisions(charCollision, pattern3, pattern3Coll);
+  handleCharacterCollisions(charCollision, pattern4, pattern4Coll);
   //collision with edges
   if (charCollision.xpos < 0) {
     character.x = 0;
@@ -227,11 +237,10 @@ void summonBoss(Boss boss){
     p2colors[1] = random(100,256);
     p2colors[1] = random(100,256);
   }
-  if (canP2) {pattern2(random(10,16),10*random(2,4),random(100,200),p2colors);}
+  if (canP2) {pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);}
   //pattern 3
   p3Duration = random(4000,8000);
-  p3Delay = random(5000,70000);
-  
+  p3Delay = random(5000,7000);
   if (canP3 && (millis() - lastP3) > p3Duration) {
     canP3 = false;
     lastP3 = millis();
@@ -250,6 +259,14 @@ void summonBoss(Boss boss){
     p3colors[1] = random(100,256);
   }
   if(canP3) {pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);}
+  //pattern 4
+  p4Delay = random(3000,5000);
+  if((millis() - lastP4) > p4Delay && !canP2){
+    float[] p4colors = {random(100,256),random(100,256),random(100,256)};
+    Bomb bomb = new Bomb(random(100,width-100),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
+    pattern4Bomb.add(bomb);
+    lastP4 = millis();
+  }
   //display health
   boss.displayHP();
 }
@@ -284,6 +301,27 @@ void pattern3(Boss boss, float speed, float angleDiff, float size, float startin
     pattern3Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p3IntDelay = millis();
     p3AngLoop += 1;
+  }
+}
+
+//pattern 4
+float p4IntDelay = millis();
+void pattern4(ArrayList<Bomb> bombs){
+  Iterator<Bomb> i = bombs.listIterator();
+  while(i.hasNext()){
+    Bomb bomb = i.next();
+    if (!bomb.canTrigger()){
+      bomb.draw();
+      bomb.update();
+    } else {
+      if (bomb.repetitions > 0 && millis() - p4IntDelay > bomb.delay){
+        bomb.triggerBomb();
+        p4IntDelay = millis();
+      }    
+    }
+    if (bomb.repetitions <= 0){
+      i.remove();
+    }
   }
 }
 
