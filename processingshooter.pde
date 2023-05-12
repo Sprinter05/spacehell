@@ -65,7 +65,7 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(width/2-100,height/2,6,4,35,100,100);
+  character = new Character(width/2-100,height/2,6,4,35,100,1);
   bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
   //load background images
@@ -83,12 +83,6 @@ void draw(){
   for (int x = -100; x < width; x += images[0].width) { 
     image(images[(currentFrame+offset) % numFrames], x, 0);
     offset+=2;
-  }
-
-  //game over if character dead
-  if (character.isDead()) {
-    noLoop();
-    gameOver();
   }
 
   //summon character
@@ -131,6 +125,12 @@ void draw(){
   }
   if (tPressed) {debugText();}
   fps();
+
+  //game over if character dead
+  if (character.isDead()) {
+    noLoop();
+    gameOver();
+  }
 }
 
 //handle character
