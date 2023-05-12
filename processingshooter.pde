@@ -86,6 +86,12 @@ void draw(){
     offset+=2;
   }
 
+  //game over if character dead
+  if (character.isDead()) {
+    noLoop();
+    gameOver();
+  }
+
   //summon character
   if (!character.isDead()) summonCharacter(character);
 
@@ -126,12 +132,6 @@ void draw(){
   }
   if (tPressed) {debugText();}
   fps();
-
-  //game over if character dead
-  if (character.isDead()) {
-    noLoop();
-    gameOver();
-  }
 }
 
 //handle character
