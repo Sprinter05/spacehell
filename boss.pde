@@ -10,6 +10,8 @@ class Boss {
     int moveDelay = 200;
     int lastMove = millis();
     float factor = 1;
+    PImage sprite1 = loadImage("Boss1.png");
+    PImage sprite2 = loadImage("Boss2.png");
 
     Boss(float x, float y, float speed, float size, float maxHealth, float health) {
         this.x = x;
@@ -21,10 +23,13 @@ class Boss {
     }
 
     void display(){
+        PImage sprite;
+        if (stage() >= 1 && stage() < 3) {sprite = sprite1;}
+        else {sprite = sprite2;}
         fill(160,30,240);
         strokeWeight(0);
         stroke(0,0,0);
-        square(x,y,size);
+        image(sprite,x,y,size,size);
     }
 
     void move(){
@@ -56,7 +61,7 @@ class Boss {
         stroke(255, 255, 255);
         rect(1200, 700, 20, -maxHealth / hbbd, 20);
         if (pattern5Shield.isEmpty()) {fill(160,30,240);}
-        else {fill(200,200,200);}
+        else {fill(55,55,55);}
         stroke(255, 255, 255);
         rect(1200, 700, 20, -health / hbbd, 20);
     }

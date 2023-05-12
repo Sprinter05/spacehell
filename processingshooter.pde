@@ -65,8 +65,8 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(width/2-200,height/2,6,4,35,100,100);
-  bossOne = new Boss(width/2,60,1,70,1000,1000);
+  character = new Character(width/2-100,height/2,6,4,35,100,100);
+  bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
@@ -219,6 +219,19 @@ void summonBoss(Boss boss){
       j.remove();
     }
   }
+  //collision with edges
+  if (bossCollision.xpos < 0) {
+    boss.x = 0;
+  }
+  if (bossCollision.ypos < 0) {
+    boss.y = 0;
+  }
+  if (bossCollision.xpos > width - boss.size) {
+    boss.x = width - boss.size;
+  }
+  if (bossCollision.ypos > height - boss.size) {
+    boss.y = height - boss.size;
+  }
   //check stage
   if (boss.stage() == 1){delayMult=1.5;}
   if (boss.stage() == 2){delayMult=1;}
@@ -235,8 +248,8 @@ void summonBoss(Boss boss){
   }
   //pattern 2
   if(boss.stage() >= 3){
-    p2Duration = random(6000,12000)/delayMult;
-    p2Delay = random(6000,12000)*delayMult;
+    p2Duration = random(8000,14000)/delayMult;
+    p2Delay = random(5000,11000)*delayMult;
     if (canP2 && (millis() - lastP2) > p2Duration) {
       canP2 = false;
       lastP2 = millis();
@@ -252,8 +265,8 @@ void summonBoss(Boss boss){
   }
   //pattern 3
   if(boss.stage() >= 1){
-    p3Duration = random(4500,9000)/delayMult;
-    p3Delay = random(3000,6000)*delayMult;
+    p3Duration = random(5000,9000)/delayMult;
+    p3Delay = random(3000,5000)*delayMult;
     if (canP3 && (millis() - lastP3) > p3Duration) {
       canP3 = false;
       lastP3 = millis();
@@ -285,7 +298,7 @@ void summonBoss(Boss boss){
   }
   //pattern 5
   if(boss.stage() >= 3){
-    p5Delay = random(75000,100000)*delayMult;
+    p5Delay = random(70000,90000)*delayMult;
     if((millis() - lastP5) > p5Delay && !canP5){
       Shield shield1 = new Shield(boss.x - 200, boss.y, 3, 50, 50);
       Shield shield2 = new Shield(boss.x + 200, boss.y, 3, 50, 50);
@@ -324,7 +337,7 @@ void pattern2(float speed, float size, float delay, float[] bullColor){
 float p3IntDelay = millis();
 void pattern3(Boss boss, float speed, float angleDiff, float size, float startingAngle, float delay, float[] bullColor){
  if ((millis() - p3IntDelay) > delay) {
-    XBullet b = new XBullet(boss.x-boss.size/2,boss.y-boss.size/2,speed,speed,startingAngle+(angleDiff*p3AngLoop),size,20,bullColor);
+    XBullet b = new XBullet(boss.x+boss.size/2,boss.y+boss.size/2,speed,speed,startingAngle+(angleDiff*p3AngLoop),size,20,bullColor);
     pattern3.add(b);
     pattern3Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p3IntDelay = millis();

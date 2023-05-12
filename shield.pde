@@ -10,6 +10,7 @@ class Shield {
     int lastDamage = millis();
     int animDelay = 150;
     int lastAnim = millis();
+    PImage sprite = loadImage("shield.png");
 
     Shield(float x, float y, float speed, float maxHealth, float health){
         this.x = x;
@@ -28,9 +29,7 @@ class Shield {
         fill(200,200,200);
         strokeWeight(0);
         stroke(0,0,0);
-        rect(x,y,sizeX,sizeY);
-        fill(190,150,215);
-        rect(x+sizeX/4,y+sizeY/4,sizeX/2,sizeY/2);
+        image(sprite,x,y,sizeX,sizeY);
     }
 
     void update(){
