@@ -68,7 +68,7 @@ void setup(){
   pixel_art = createFont("pixel_art.ttf", 24);
   cambria = createFont("cambria.ttf", 24);
   //summon objects
-  character = new Character(width/2-100,height/2,6,4,35,10,10);
+  character = new Character(width/2-100,height/2,6,4,35,100,100);
   bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
   //load background images
