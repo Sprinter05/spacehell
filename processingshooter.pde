@@ -1,5 +1,5 @@
 import java.util.*;
-import processing.sound.*;
+import processing.sound,*; //import directly from processing.exe
 
 //create objects
 PFont cambria;
