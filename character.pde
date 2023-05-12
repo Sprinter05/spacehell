@@ -11,8 +11,6 @@ class Character {
     int animDelay = 150;
     int lastAnim = millis();
     boolean hitAnim = false;
-    float hitAnimDelay = 500;
-    float lasthitAnim = millis();
     float rotateConc = 0;
     PImage sprite = loadImage("nave.png");
     PImage concSprite = loadImage("focus.png");
@@ -44,14 +42,7 @@ class Character {
         fill(0,0,0);
         strokeWeight(0);
         stroke(0,0,0);
-        if (hitAnim) {
-            tint(255,0,0);
-            image(sprite,x,y,size,size);
-            hitAnim = false;
-        } else {
-            noTint();
-            image(sprite,x,y,size,size);
-        }
+        image(sprite,x,y,size,size);
     }
     void move(){
         float speedtoUse;

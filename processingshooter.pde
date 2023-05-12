@@ -65,8 +65,8 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(width/2,height/2,6,4,35,100,100);
-  bossOne = new Boss(width/2,60,70,1000,1000);
+  character = new Character(width/2-200,height/2,6,4,35,100,100);
+  bossOne = new Boss(width/2,60,1,70,1000,1000);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
@@ -194,6 +194,7 @@ void handleCharacterCollisions(CollisionBox charCollision, ArrayList<XBullet> pa
 void summonBoss(Boss boss){
   //appear
   boss.display();
+  boss.move();
   //create own collision
   float sizeMult = 5;
   CollisionBox bossCollision = new CollisionBox(boss.x - (sizeMult/2), boss.y - (sizeMult/2), boss.size + sizeMult, boss.size + sizeMult);
