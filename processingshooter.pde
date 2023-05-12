@@ -6,8 +6,9 @@ PFont cambria;
 Character character;
 Boss bossOne;
 
-//check game start
+//check game start and game over
 boolean gameStart = false;
+boolean gameOver = false;
 
 //bullet stuff
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
@@ -66,7 +67,7 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
 
   //summon objects
-  character = new Character(width/2-100,height/2,6,4,35,100,100);
+  character = new Character(width/2-100,height/2,6,4,35,100,1);
   bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
   //load background images
@@ -88,8 +89,7 @@ void draw(){
 
   //game over if character dead
   if (character.isDead()) {
-    noLoop();
-    gameOver();
+    gameOver = true;
   }
 
   //summon character
@@ -132,6 +132,11 @@ void draw(){
   }
   if (tPressed) {debugText();}
   fps();
+
+  if(gameOver) {
+    noLoop();
+    gameOver();
+  }
 }
 
 //handle character
