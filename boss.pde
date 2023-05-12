@@ -4,20 +4,15 @@ class Boss {
     float size;
     float maxHealth;
     float health;
-    float hbbd;
-    int healthDelay = 0;
+    int healthDelay = 20;
     int lastDamage = millis();
-    int bulletDelay = 50;
-    int lastShot = millis();
-    int pOrder[];
 
-    Boss(float x, float y, float size, float maxHealth, float health, int pOrder[]) {
+    Boss(float x, float y, float size, float maxHealth, float health) {
         this.x = x;
         this.y = y;
         this.size = size;
         this.maxHealth = maxHealth;
         this.health = health;
-        this.pOrder = pOrder;
     }
 
     void display(){
@@ -25,6 +20,13 @@ class Boss {
         strokeWeight(0);
         stroke(0,0,0);
         square(x,y,size);
+    }
+
+    int stage(){
+        if (health >= (maxHealth*2)/3 && health <= maxHealth){return 1;}
+        else if (health >= maxHealth/3 && health < (maxHealth*2)/3){return 2;}
+        else if (health >= 0 && health < maxHealth/3){return 3;}
+        else return 0;
     }
 
     boolean isDead(){

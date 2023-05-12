@@ -6,8 +6,7 @@ class Character {
     float size;
     float maxHealth;
     float health;
-    float hbcd;
-    int healthDelay = 50;
+    int healthDelay = 100;
     int lastDamage = millis();
     int animDelay = 150;
     int lastAnim = millis();

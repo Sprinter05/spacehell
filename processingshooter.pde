@@ -40,6 +40,7 @@ float[] p2colors = new float[3];
 float[] p3colors = new float[3];
 float[] p4colors = new float[3];
 float delay3, size3, speed3, angDiff3, startAng3, p3AngLoop;
+float delayMult;
 
 //keypress detections
 boolean wPressed = false;
@@ -65,8 +66,7 @@ void setup(){
 
   //summon objects
   character = new Character(width/2,height/2,6,4,35,100,100);
-  int[] patterns = {1,1,1};
-  bossOne = new Boss(width/2,60,70,200,200,patterns);
+  bossOne = new Boss(width/2,60,70,1000,1000);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
@@ -107,8 +107,8 @@ void draw(){
 
   //health ball
   hpballDelay = random(25000,35000);
-  if (millis() - lasthpBall > hpballDelay && hpballs.isEmpty()){
-    HealthBall hpb = new HealthBall(random(0,width-150),random(0, height/2),2,50,random(15,25),random(40,60),random(15000,20000));
+  if (millis() - lasthpBall > hpballDelay && hpballs.isEmpty() && bossOne.stage() >= 2){
+    HealthBall hpb = new HealthBall(random(0,width-150),random(0, height/2),2,50,random(25,30),random(20,40),random(15000,20000));
     hpballs.add(hpb);
   }
   if (!hpballs.isEmpty()) {handlehpBalls();}
@@ -216,69 +216,82 @@ void summonBoss(Boss boss){
       j.remove();
     }
   }
+  //check stage
+  if (boss.stage() == 1){delayMult=1.5;}
+  if (boss.stage() == 2){delayMult=1;}
+  if (boss.stage() == 3){delayMult=0.5;}
   //summon patterns
   //pattern 1
-  p1Delay = random(600,1000);
-  if ((millis() - lastP1) > p1Delay && !canP2){
-    float[] p1colors = {random(100,256),random(100,256),random(100,256)};
-    pattern1(boss,random(10,16),15*random(1,5),10*random(2,4),360,15*random(0,4),p1colors);
-    lastP1 = millis();
+  if(boss.stage() >= 1){
+    p1Delay = random(800,1200)*delayMult;
+    if ((millis() - lastP1) > p1Delay && !canP2){
+      float[] p1colors = {random(100,256),random(100,256),random(100,256)};
+      pattern1(boss,random(10,16),15*random(1,5),10*random(2,4),360,15*random(0,4),p1colors);
+      lastP1 = millis();
+    }
   }
   //pattern 2
-  p2Duration = random(5000,10000);
-  p2Delay = random(6000,12000);
-  if (canP2 && (millis() - lastP2) > p2Duration) {
-    canP2 = false;
-    lastP2 = millis();
+  if(boss.stage() >= 3){
+    p2Duration = random(6000,12000)/delayMult;
+    p2Delay = random(6000,12000)*delayMult;
+    if (canP2 && (millis() - lastP2) > p2Duration) {
+      canP2 = false;
+      lastP2 = millis();
+    }
+    if (!canP2 && (millis() - lastP2) > p2Delay) {
+      canP2 = true;
+      lastP2 = millis();
+      p2colors[0] = random(100,256);
+      p2colors[1] = random(100,256);
+      p2colors[1] = random(100,256);
+    }
+    if (canP2) {pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);}
   }
-  if (!canP2 && (millis() - lastP2) > p2Delay) {
-    canP2 = true;
-    lastP2 = millis();
-    p2colors[0] = random(100,256);
-    p2colors[1] = random(100,256);
-    p2colors[1] = random(100,256);
-  }
-  if (canP2) {pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);}
   //pattern 3
-  p3Duration = random(4000,8000);
-  p3Delay = random(5000,7000);
-  if (canP3 && (millis() - lastP3) > p3Duration) {
-    canP3 = false;
-    lastP3 = millis();
+  if(boss.stage() >= 1){
+    p3Duration = random(4500,9000)/delayMult;
+    p3Delay = random(3000,6000)*delayMult;
+    if (canP3 && (millis() - lastP3) > p3Duration) {
+      canP3 = false;
+      lastP3 = millis();
+    }
+    if (!canP3 && (millis() - lastP3) > p3Delay) {
+      canP3 = true;
+      lastP3 = millis();
+      p3AngLoop = 0;
+      speed3 = random(10,16);
+      size3 = 10*random(2,4);
+      angDiff3 = 15*random(1,5);
+      startAng3 = 15*random(0,4);
+      delay3 = random(50,200);
+      p3colors[0] = random(100,256);
+      p3colors[1] = random(100,256);
+      p3colors[1] = random(100,256);
+    }
+    if(canP3) {pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);}
   }
-  if (!canP3 && (millis() - lastP3) > p3Delay) {
-    canP3 = true;
-    lastP3 = millis();
-    p3AngLoop = 0;
-    speed3 = random(10,16);
-    size3 = 10*random(2,4);
-    angDiff3 = 15*random(1,5);
-    startAng3 = 15*random(0,4);
-    delay3 = random(50,200);
-    p3colors[0] = random(100,256);
-    p3colors[1] = random(100,256);
-    p3colors[1] = random(100,256);
-  }
-  if(canP3) {pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);}
   //pattern 4
-  p4Delay = random(3000,5000);
-  if((millis() - lastP4) > p4Delay && !canP2){
-    float[] p4colors = {random(100,256),random(100,256),random(100,256)};
-    Bomb bomb = new Bomb(random(100,width-150),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
-    pattern4Bomb.add(bomb);
-    lastP4 = millis();
+  if(boss.stage() >= 2){
+    p4Delay = random(2000,4000)*delayMult;
+    if((millis() - lastP4) > p4Delay && !canP2){
+      float[] p4colors = {random(100,256),random(100,256),random(100,256)};
+      Bomb bomb = new Bomb(random(100,width-150),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
+      pattern4Bomb.add(bomb);
+      lastP4 = millis();
+    }
   }
   //pattern 5
-  p5Delay = random(30000,70000);
-  if((millis() - lastP5) > p5Delay && !canP5){
-    Shield shield1 = new Shield(boss.x - 200, boss.y, 3, 50, 50);
-    Shield shield2 = new Shield(boss.x + 200, boss.y, 3, 50, 50);
-    pattern5Shield.add(shield1);
-    pattern5Shield.add(shield2);
-    canP5 = true;
+  if(boss.stage() >= 3){
+    p5Delay = random(75000,100000)*delayMult;
+    if((millis() - lastP5) > p5Delay && !canP5){
+      Shield shield1 = new Shield(boss.x - 200, boss.y, 3, 50, 50);
+      Shield shield2 = new Shield(boss.x + 200, boss.y, 3, 50, 50);
+      pattern5Shield.add(shield1);
+      pattern5Shield.add(shield2);
+      canP5 = true;
+    }
+    if (pattern5Shield.isEmpty()) {canP5 = false;}
   }
-  if (pattern5Shield.isEmpty()) {canP5 = false;}
-  //pattern 6
   //display health
   boss.displayHP();
 }
