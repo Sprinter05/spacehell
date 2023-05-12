@@ -125,7 +125,10 @@ void draw(){
   if (!pattern6.isEmpty()) {handlePattern(pattern6, pattern6Coll);}
 
   //activate other functions
-  if (!gameStart) {startText();}
+  if (!gameStart) {
+    startText();
+    tutoText();
+  }
   if (tPressed) {debugText();}
   fps();
 }
@@ -506,6 +509,17 @@ void startText(){
   textSize(20);
   fill(255,255,255);
   text("Press enter to start the game",width/2-100,height-100);
+}
+
+//tutorial text
+void tutoText(){
+  textFont(cambria);
+  textSize(15);
+  fill(255,255,255);
+  text("Move with arrows",width/2-300,height/2+20);
+  text("Press z to shoot",width/2-300,height/2+40);
+  text("Press x to focus",width/2-300,height/2+60);
+  text("Press space to pause",width/2-300,height/2+80);
 }
 
 //DEBUG collisions text
