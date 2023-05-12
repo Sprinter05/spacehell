@@ -9,6 +9,7 @@ class Bomb {
     float repetitions;
     int rotated;
     float[] bullColor;
+    PImage sprite = loadImage("bomb.png");
 
     Bomb(float x, float y, float speed, float bspeed, float size, float triggerY, float delay, float repetitions, int rotated, float[] bullColor){
         this.x = x;
@@ -47,17 +48,17 @@ class Bomb {
     }
 
     void draw(){
-        fill(255,255,0);
+        fill(255,255,255);
         strokeWeight(0);
         stroke(255,255,0);
-        ellipse(x,y,40,40);
-        fill(255,0,0);
-        strokeWeight(0);
-        stroke(255,0,0);
-        ellipse(x,y,30,30);
-        fill(255,140,0);
-        strokeWeight(0);
-        stroke(255,140,0);
-        ellipse(x,y,20,20);
+        if (rotated==1) {
+            pushMatrix();
+            translate(x, y);
+            rotate(radians(45));
+            image(sprite, 0, 0, 40, 40);
+            popMatrix();
+        } else {
+            image(sprite,x,y,40,40);
+        }   
     }
 }

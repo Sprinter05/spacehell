@@ -13,7 +13,9 @@ class Character {
     boolean hitAnim = false;
     float hitAnimDelay = 500;
     float lasthitAnim = millis();
+    float rotateConc = 0;
     PImage sprite = loadImage("nave.png");
+    PImage concSprite = loadImage("focus.png");
 
     Character(float x, float y, float speed, float concSpeed, float size, float maxHealth, float health) {
         this.x = x;
@@ -26,6 +28,19 @@ class Character {
     }
 
     void display(){
+        if (xPressed) { //concentration mode
+            rotateConc += 1;
+            fill(0,0,0,0);
+            strokeWeight(2);
+            stroke(0,0,255);
+            imageMode(CENTER);
+            pushMatrix();
+            translate(x+size/2, y+size/2);
+            rotate(radians(rotateConc));
+            image(concSprite, 0, 0, size*1.5, size*1.5);
+            popMatrix();
+            imageMode(CORNER);
+        }
         fill(0,0,0);
         strokeWeight(0);
         stroke(0,0,0);
@@ -36,12 +51,6 @@ class Character {
         } else {
             noTint();
             image(sprite,x,y,size,size);
-        }
-        if (xPressed) { //concentration mode
-            fill(0,0,0,0);
-            strokeWeight(2);
-            stroke(0,0,255);
-            ellipse(x+size/2, y+size/2, size, size);
         }
     }
     void move(){

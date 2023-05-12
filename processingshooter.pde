@@ -108,7 +108,8 @@ void draw(){
   //health ball
   hpballDelay = random(25000,35000);
   if (millis() - lasthpBall > hpballDelay && hpballs.isEmpty() && bossOne.stage() >= 2){
-    HealthBall hpb = new HealthBall(random(0,width-150),random(0, height/2),2,50,random(25,30),random(20,40),random(15000,20000));
+    float hp = random(20,40);
+    HealthBall hpb = new HealthBall(random(0,width-150),random(0, height/2),2,50,random(25,30),hp,hp,random(15000,20000));
     hpballs.add(hpb);
   }
   if (!hpballs.isEmpty()) {handlehpBalls();}
