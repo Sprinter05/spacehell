@@ -2,10 +2,11 @@ import java.util.*;
 import processing.sound.*; //import directly from processing.exe
 
 //create objects
+PFont pixel_art;
 PFont cambria;
 Character character;
 Boss bossOne;
-
+PImage game_over;
 //check game start and game over
 boolean gameStart = false;
 boolean gameOver = false;
@@ -64,16 +65,17 @@ void setup(){
   size(1280,720);
   background(0,0,0);
   frameRate(60);
+  pixel_art = createFont("pixel_art.ttf", 24);
   cambria = createFont("cambria.ttf", 24);
-
   //summon objects
-  character = new Character(width/2-100,height/2,6,4,35,100,100);
+  character = new Character(width/2-100,height/2,6,4,35,10,10);
   bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
     images[i] = loadImage("f"+i+".gif");
   }
+  game_over = loadImage("game_over.png");
 }
 
 void draw(){
@@ -511,26 +513,32 @@ void fps() {
 
 //start game text
 void startText(){
-  textFont(cambria);
+  textFont(pixel_art);
+  textSize(60);
+  fill(31,131,19);
+  text(">>>START<<<", width/2-250, 80);
   textSize(20);
-  fill(255,255,255);
-  text("Press enter to start the game",width/2-100,height-100);
+  fill(34,103,14);
+  text(">>>Press enter to start the game<<<",width/2-270,height-100);
 }
 
 //tutorial text
 void tutoText(){
-  textFont(cambria);
+  textFont(pixel_art);
   textSize(15);
-  fill(255,255,255);
-  text("Move with arrows",width/2-300,height/2+20);
-  text("Press z to shoot",width/2-300,height/2+40);
-  text("Press x to focus",width/2-300,height/2+60);
-  text("Press space to pause",width/2-300,height/2+80);
+  fill(82,182,68);
+  text("Move with arrows",width/2-400,height/2+20);
+  fill(115,198,103);
+  text("Press z to shoot",width/2-400,height/2+40);
+  fill(149,212,140);
+  text("Press x to focus",width/2-400,height/2+60);
+  fill(183,226,177);
+  text("Press space to pause",width/2-400,height/2+80);
 }
 
 //DEBUG collisions text
 void debugText(){
-  textFont(cambria);
+  textFont(pixel_art);
   textSize(15);
   fill(255,0,0);
   text("DEBUG COLLISIONS",width-150,30);
@@ -538,10 +546,11 @@ void debugText(){
 
 //game over text
 void gameOver(){
-  textFont(cambria);
+  textFont(pixel_art);
   textSize(30);
   fill(255,255,255);
   text("> GAME OVER <",width/2-200,30);
+  image(game_over, 325, 125, 640, 360);
 }
 
 //handle key press and release
@@ -576,7 +585,7 @@ void keyPressed() {
     } else {
       spcPressed = true;
       noLoop();
-      textFont(cambria);
+      textFont(pixel_art);
       textSize(30);
       fill(255,255,255);
       text("> PAUSE <",width/2-100,30);
