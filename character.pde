@@ -10,6 +10,9 @@ class Character {
     int lastDamage = millis();
     int animDelay = 150;
     int lastAnim = millis();
+    boolean hitAnim = false;
+    float hitAnimDelay = 500;
+    float lasthitAnim = millis();
     PImage sprite = loadImage("nave.png");
 
     Character(float x, float y, float speed, float concSpeed, float size, float maxHealth, float health) {
@@ -26,7 +29,14 @@ class Character {
         fill(0,0,0);
         strokeWeight(0);
         stroke(0,0,0);
-        image(sprite,x,y,size,size);
+        if (hitAnim) {
+            tint(255,0,0);
+            image(sprite,x,y,size,size);
+            hitAnim = false;
+        } else {
+            noTint();
+            image(sprite,x,y,size,size);
+        }
         if (xPressed) { //concentration mode
             fill(0,0,0,0);
             strokeWeight(2);
@@ -34,7 +44,6 @@ class Character {
             ellipse(x+size/2, y+size/2, size, size);
         }
     }
-
     void move(){
         float speedtoUse;
         if (xPressed){

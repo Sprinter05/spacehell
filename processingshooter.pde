@@ -181,6 +181,7 @@ void handleCharacterCollisions(CollisionBox charCollision, ArrayList<XBullet> pa
       if (millis() - character.lastDamage > character.healthDelay) {
         character.health -= 1;
         character.lastDamage = millis();
+        character.hitAnim = true;
       }
       i.remove();
       j.remove();
