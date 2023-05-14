@@ -7,9 +7,12 @@ PFont cambria;
 Character character;
 Boss bossOne;
 PImage game_over;
+PImage logo;
+PImage winI;
 //check game start and game over
 boolean gameStart = false;
 boolean gameOver = false;
+boolean win = false;
 
 //bullet stuff
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
@@ -69,13 +72,15 @@ void setup(){
   cambria = createFont("cambria.ttf", 24);
   //summon objects
   character = new Character(width/2-100,height/2,6,4,35,100,100);
-  bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
+  bossOne = new Boss(width/2-100,height/8,1,130,5,5);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
     images[i] = loadImage("f"+i+".gif");
   }
   game_over = loadImage("game_over.png");
+  logo = loadImage("logo2.png");
+  winI = loadImage("win.png");
 }
 
 void draw(){
@@ -92,6 +97,10 @@ void draw(){
   //game over if character dead
   if (character.isDead()) {
     gameOver = true;
+  }
+  //win if boss dead
+  if (bossOne.isDead()) {
+    win = true;
   }
 
   //summon character
@@ -138,6 +147,10 @@ void draw(){
   if(gameOver) {
     noLoop();
     gameOver();
+  }
+  if(win) {
+    noLoop();
+    image(winI, 350, 50, 600, 600);
   }
 }
 
@@ -272,7 +285,9 @@ void summonBoss(Boss boss){
       p2colors[1] = random(100,256);
       p2colors[1] = random(100,256);
     }
-    if (canP2) {pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);}
+    if (canP2) {
+      pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);
+    }
   }
   //pattern 3
   if(boss.stage() >= 1){
@@ -295,7 +310,9 @@ void summonBoss(Boss boss){
       p3colors[1] = random(100,256);
       p3colors[1] = random(100,256);
     }
-    if(canP3) {pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);}
+    if(canP3) {
+      pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);
+      }
   }
   //pattern 4
   if(boss.stage() >= 2){
@@ -305,6 +322,7 @@ void summonBoss(Boss boss){
       Bomb bomb = new Bomb(random(100,width-150),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
       pattern4Bomb.add(bomb);
       lastP4 = millis();
+      
     }
   }
   //pattern 5
@@ -330,6 +348,7 @@ void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngl
     XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,startingAngle + (angleDiff*i),size,20,bullColor);
     pattern1.add(b);
     pattern1Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
+    
   }   
 }
 
@@ -341,6 +360,7 @@ void pattern2(float speed, float size, float delay, float[] bullColor){
     pattern2.add(b);
     pattern2Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p2IntDelay = millis();
+    
   }
 }
 
@@ -353,6 +373,7 @@ void pattern3(Boss boss, float speed, float angleDiff, float size, float startin
     pattern3Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p3IntDelay = millis();
     p3AngLoop += 1;
+    
   }
 }
 
@@ -516,7 +537,7 @@ void startText(){
   textFont(pixel_art);
   textSize(60);
   fill(31,131,19);
-  text(">>>START<<<", width/2-250, 80);
+  image(logo, 400, -135, 600, 600);
   textSize(20);
   fill(34,103,14);
   text(">>>Press enter to start the game<<<",width/2-270,height-100);
@@ -546,10 +567,6 @@ void debugText(){
 
 //game over text
 void gameOver(){
-  textFont(pixel_art);
-  textSize(30);
-  fill(255,255,255);
-  text("> GAME OVER <",width/2-200,30);
   image(game_over, 325, 125, 640, 360);
 }
 
@@ -587,7 +604,7 @@ void keyPressed() {
       noLoop();
       textFont(pixel_art);
       textSize(30);
-      fill(255,255,255);
+      fill(255,0,50);
       text("> PAUSE <",width/2-100,30);
     }
   }
