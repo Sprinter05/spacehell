@@ -1,5 +1,4 @@
 import java.util.*;
-import processing.sound.*; //import directly from processing.exe
 
 //create objects
 PFont pixel_art;
@@ -9,6 +8,7 @@ Boss bossOne;
 PImage game_over;
 PImage logo;
 PImage winI;
+
 //check game start and game over
 boolean gameStart = false;
 boolean gameOver = false;
@@ -70,9 +70,10 @@ void setup(){
   frameRate(60);
   pixel_art = createFont("pixel_art.ttf", 24);
   cambria = createFont("cambria.ttf", 24);
+
   //summon objects
   character = new Character(width/2-100,height/2,6,4,35,100,100);
-  bossOne = new Boss(width/2-100,height/8,1,130,5,5);
+  bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
   //load background images
   for (int i = 0; i < 16; i += 1){
@@ -559,7 +560,7 @@ void tutoText(){
 
 //DEBUG collisions text
 void debugText(){
-  textFont(pixel_art);
+  textFont(cambria);
   textSize(15);
   fill(255,0,0);
   text("DEBUG COLLISIONS",width-150,30);
