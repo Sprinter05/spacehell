@@ -32,6 +32,7 @@ ArrayList<XBullet> pattern2 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern2Coll = new ArrayList<CollisionCircle>();
 ArrayList<XBullet> pattern3 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern3Coll = new ArrayList<CollisionCircle>();
+ArrayList<Spiral> pattern3Spiral = new ArrayList<Spiral>();
 ArrayList<XBullet> pattern4 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern4Coll = new ArrayList<CollisionCircle>();
 ArrayList<Bomb> pattern4Bomb = new ArrayList<Bomb>();
@@ -39,12 +40,12 @@ ArrayList<Shield> pattern5Shield = new ArrayList<Shield>();
 ArrayList<XBullet> pattern6 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern6Coll = new ArrayList<CollisionCircle>();
 float p1Delay, p2Delay, p3Delay, p4Delay, p5Delay, p6Delay;
-float p2Duration, p3Duration;
 float lastP1, lastP2, lastP3, lastP4, lastP5, lastP6 = millis();
 boolean canP2, canP3, canP5 = false;
+float p2Duration;
+boolean p3Ended = true;
 float[] p2colors = new float[3];
 float[] p3colors = new float[3];
-float delay3, size3, speed3, angDiff3, startAng3, p3AngLoop;
 float delayMult;
 
 //keypress detections
@@ -131,6 +132,7 @@ void draw(){
   if (!pattern1.isEmpty()) {handlePattern(pattern1, pattern1Coll);}
   if (!pattern2.isEmpty()) {handlePattern(pattern2, pattern2Coll);}
   if (!pattern3.isEmpty()) {handlePattern(pattern3, pattern3Coll);}
+  if (!pattern3Spiral.isEmpty()) {pattern3(pattern3Spiral, bossOne);}
   if (!pattern4Bomb.isEmpty()) {pattern4(pattern4Bomb);}
   if (!pattern4.isEmpty()) {handlePattern(pattern4, pattern4Coll);}
   if (!pattern5Shield.isEmpty()) {pattern5(pattern5Shield);}
@@ -262,7 +264,7 @@ void summonBoss(Boss boss){
   if (boss.stage() == 3){delayMult=0.5;}
   //summon patterns
   //pattern 1
-  if(boss.stage() >= 1){
+  /*if(boss.stage() >= 1){
     p1Delay = random(800,1200)*delayMult;
     if ((millis() - lastP1) > p1Delay && !canP2){
       float[] p1colors = {random(100,256),random(100,256),random(100,256)};
@@ -288,41 +290,30 @@ void summonBoss(Boss boss){
     if (canP2) {
       pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);
     }
-  }
+  }*/
   //pattern 3
   if(boss.stage() >= 1){
-    p3Duration = random(5000,9000)/delayMult;
-    p3Delay = random(3000,5000)*delayMult;
-    if (canP3 && (millis() - lastP3) > p3Duration) {
-      canP3 = false;
-      lastP3 = millis();
-    }
-    if (!canP3 && (millis() - lastP3) > p3Delay) {
+    p3Delay = random(3000,5000);
+    if (p3Ended && !canP3 && (millis() - lastP3) > p3Delay) {
       canP3 = true;
       lastP3 = millis();
-      p3AngLoop = 0;
-      speed3 = random(10,16);
-      size3 = 10*random(2,4);
-      angDiff3 = 15*random(1,5);
-      startAng3 = 15*random(0,4);
-      delay3 = random(50,200);
-      p3colors[0] = random(100,256);
-      p3colors[1] = random(100,256);
-      p3colors[2] = random(100,256);
     }
     if(canP3) {
-      pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);
-      }
+      float[] p3colors = {random(100,256),random(100,256),random(100,256)};
+      Spiral spiral = new Spiral(boss.x+boss.size/2,boss.y+boss.size/2, random(10,16), 15*random(1,5), 10*random(2,4), 15*random(0,4), random(50,200), random(30,40), p3colors);
+      pattern3Spiral.add(spiral);
+      canP3 = false;
+      p3Ended = false;
+    }
   }
   //pattern 4
-  if(boss.stage() >= 2){
+  /*if(boss.stage() >= 2){
     p4Delay = random(2000,4000)*delayMult;
     if((millis() - lastP4) > p4Delay && !canP2){
       float[] p4colors = {random(100,256),random(100,256),random(100,256)};
       Bomb bomb = new Bomb(random(100,width-150),0,random(8,14),random(12,18),10*random(2,4),random(height/3,height-100),random(50,200),random(15,60),int(random(0,2)),p4colors);
       pattern4Bomb.add(bomb);
       lastP4 = millis();
-      
     }
   }
   //pattern 5
@@ -336,7 +327,7 @@ void summonBoss(Boss boss){
       canP5 = true;
     }
     if (pattern5Shield.isEmpty()) {canP5 = false;}
-  }
+  }*/
   //display health
   boss.displayHP();
 }
@@ -360,20 +351,23 @@ void pattern2(float speed, float size, float delay, float[] bullColor){
     pattern2.add(b);
     pattern2Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
     p2IntDelay = millis();
-    
   }
 }
 
 //pattern 3
 float p3IntDelay = millis();
-void pattern3(Boss boss, float speed, float angleDiff, float size, float startingAngle, float delay, float[] bullColor){
- if ((millis() - p3IntDelay) > delay) {
-    XBullet b = new XBullet(boss.x+boss.size/2,boss.y+boss.size/2,speed,speed,startingAngle+(angleDiff*p3AngLoop),size,20,bullColor);
-    pattern3.add(b);
-    pattern3Coll.add(new CollisionCircle(b.x + b.radius/2, b.y + b.radius/2, b.radius));
-    p3IntDelay = millis();
-    p3AngLoop += 1;
-    
+void pattern3(ArrayList<Spiral> spirals, Boss boss){
+  Iterator<Spiral> i = spirals.listIterator();
+  while(i.hasNext()){
+    Spiral spiral = i.next();
+    spiral.x = boss.x + boss.size/2;
+    spiral.y = boss.y + boss.size/2;
+    spiral.draw();
+    if (spiral.repetitions <= 0) {
+      i.remove();
+      p3Ended = true;
+      lastP3 = millis();
+    }
   }
 }
 
