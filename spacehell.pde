@@ -3,11 +3,11 @@ import java.util.*;
 //create objects
 PFont pixel_art;
 PFont cambria;
-Character character;
-Boss bossOne;
 PImage game_over;
 PImage logo;
 PImage winI;
+Character character;
+Boss bossOne;
 
 //check game start and game over
 boolean gameStart = false;
@@ -44,7 +44,6 @@ float lastP1, lastP2, lastP3, lastP4, lastP5, lastP6 = millis();
 boolean canP2, canP3, canP5 = false;
 float[] p2colors = new float[3];
 float[] p3colors = new float[3];
-float[] p4colors = new float[3];
 float delay3, size3, speed3, angDiff3, startAng3, p3AngLoop;
 float delayMult;
 
@@ -284,7 +283,7 @@ void summonBoss(Boss boss){
       lastP2 = millis();
       p2colors[0] = random(100,256);
       p2colors[1] = random(100,256);
-      p2colors[1] = random(100,256);
+      p2colors[2] = random(100,256);
     }
     if (canP2) {
       pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);
@@ -309,7 +308,7 @@ void summonBoss(Boss boss){
       delay3 = random(50,200);
       p3colors[0] = random(100,256);
       p3colors[1] = random(100,256);
-      p3colors[1] = random(100,256);
+      p3colors[2] = random(100,256);
     }
     if(canP3) {
       pattern3(boss,speed3,angDiff3,size3,startAng3,delay3,p3colors);
