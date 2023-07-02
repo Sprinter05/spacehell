@@ -264,7 +264,7 @@ void summonBoss(Boss boss){
   if (boss.stage() == 3){delayMult=0.5;}
   //summon patterns
   //pattern 1
-  /*if(boss.stage() >= 1){
+  if(boss.stage() >= 1){
     p1Delay = random(800,1200)*delayMult;
     if ((millis() - lastP1) > p1Delay && !canP2){
       float[] p1colors = {random(100,256),random(100,256),random(100,256)};
@@ -290,7 +290,7 @@ void summonBoss(Boss boss){
     if (canP2) {
       pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);
     }
-  }*/
+  }
   //pattern 3
   if(boss.stage() >= 1){
     p3Delay = random(3000,5000);
@@ -307,7 +307,7 @@ void summonBoss(Boss boss){
     }
   }
   //pattern 4
-  /*if(boss.stage() >= 2){
+  if(boss.stage() >= 2){
     p4Delay = random(2000,4000)*delayMult;
     if((millis() - lastP4) > p4Delay && !canP2){
       float[] p4colors = {random(100,256),random(100,256),random(100,256)};
@@ -327,7 +327,7 @@ void summonBoss(Boss boss){
       canP5 = true;
     }
     if (pattern5Shield.isEmpty()) {canP5 = false;}
-  }*/
+  }
   //display health
   boss.displayHP();
 }
