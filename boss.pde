@@ -22,6 +22,7 @@ class Boss {
         this.health = health;
     }
 
+    // Draws the boss
     void display(){
         PImage sprite;
         if (stage() >= 1 && stage() < 3) {sprite = sprite1;}
@@ -32,6 +33,7 @@ class Boss {
         image(sprite,x,y,size,size);
     }
 
+    // Moves randomly around the top part of the screen
     void move(){
         if (factor == 1) {factor = -1;}
         else {factor = 1;}
@@ -42,6 +44,7 @@ class Boss {
         }
     }
 
+    // Returns the stage the boss is at based on its health
     int stage(){
         if (health >= (maxHealth*2)/3 && health <= maxHealth){return 1;}
         else if (health >= maxHealth/3 && health < (maxHealth*2)/3){return 2;}
@@ -49,11 +52,13 @@ class Boss {
         else return 0;
     }
 
+    // Returns whether the boss is dead or not
     boolean isDead(){
         if (health <= 0) return true;
         return false;
     }
 
+    // Displays the boss' health bar
     void displayHP(){
         float hbbd = maxHealth / 650;
         strokeWeight(3);

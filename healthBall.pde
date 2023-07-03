@@ -25,6 +25,7 @@ class HealthBall {
         this.disappearAfter = disappearAfter;
     }
 
+    // Draws the health ball
     void display(){
         fill(0,200,0);
         strokeWeight(0);
@@ -34,6 +35,7 @@ class HealthBall {
         noTint();
     }
 
+    // Moves randomly around the screen
     void move(){
         if ((millis() - lastMove) > moveDelay){
             x += random(-1,2)*speed;
@@ -42,6 +44,7 @@ class HealthBall {
         }
     }
 
+    // Returns whether enough time has passed to despawn the health ball or not
     boolean isDespawned(){
         if (millis() - spawnTime > disappearAfter){
             return true;
@@ -49,6 +52,7 @@ class HealthBall {
         return false;
     }
 
+    // Returns true when the health ball has been destroyed
     boolean isDead(){
         if (health <= 0) return true;
         return false;

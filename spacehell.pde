@@ -1,31 +1,33 @@
 import java.util.*;
 
-//create objects
+// Import fonts and sprites
 PFont pixel_art;
 PFont cambria;
 PImage game_over;
 PImage logo;
 PImage winI;
+
+// Create objects
 Character character;
 Boss bossOne;
 
-//check game start and game over
+// Declare game state variables
 boolean gameStart = false;
 boolean gameOver = false;
 boolean win = false;
 
-//bullet stuff
+// Declare character's bullets variables
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 ArrayList<CollisionBox> bulletsColl = new ArrayList<CollisionBox>();
 int bulletDelay = 100;
 int lastShot = millis();
 
-//health ball stuff
+// Declare health ball variables
 ArrayList<HealthBall> hpballs = new ArrayList<HealthBall>();
 float hpballDelay;
 float lasthpBall = millis();
 
-//pattern stuff
+// Declare pattern's variables
 ArrayList<XBullet> pattern1 = new ArrayList<XBullet>();
 ArrayList<CollisionCircle> pattern1Coll = new ArrayList<CollisionCircle>();
 ArrayList<XBullet> pattern2 = new ArrayList<XBullet>();
@@ -48,7 +50,7 @@ float[] p2colors = new float[3];
 float[] p3colors = new float[3];
 float delayMult;
 
-//keypress detections
+// Declare key press variables
 boolean wPressed = false;
 boolean dPressed = false;
 boolean sPressed = false;
@@ -58,24 +60,24 @@ boolean xPressed = false;
 boolean tPressed = false;
 boolean spcPressed = false;
 
-//background
+// Import background animation
 int numFrames = 16;  // The number of frames in the animation
 int currentFrame = 0;
 PImage[] images = new PImage[numFrames];
 
 void setup(){
-  //setup canvas and parameters
+  // Setup canvas and parameters
   size(1280,720);
   background(0,0,0);
   frameRate(60);
   pixel_art = createFont("pixel_art.ttf", 24);
   cambria = createFont("cambria.ttf", 24);
 
-  //summon objects
+  // Setup character and boss objects
   character = new Character(width/2-100,height/2,6,4,35,100,100);
   bossOne = new Boss(width/2-100,height/8,1,130,1000,1000);
 
-  //load background images
+  // Load background images
   for (int i = 0; i < 16; i += 1){
     images[i] = loadImage("f"+i+".gif");
   }
@@ -85,9 +87,9 @@ void setup(){
 }
 
 void draw(){
-  background(0); //cls
+  background(0); // Clear screen (cls)
 
-  //Animation stuff
+  // Play the animation
   currentFrame = (currentFrame+1) % numFrames;  // Use % to cycle through frames
   int offset = 0;
   for (int x = -100; x < width; x += images[0].width) { 
@@ -95,22 +97,22 @@ void draw(){
     offset+=2;
   }
 
-  //game over if character dead
+  // Set game over to true if character is dead
   if (character.isDead()) {
     gameOver = true;
   }
-  //win if boss dead
+  // Set victory to true if boss is dead
   if (bossOne.isDead()) {
     win = true;
   }
 
-  //summon character
+  // Call method to summon character unless its dead
   if (!character.isDead()) summonCharacter(character);
 
-  //summon boss
+  // Call method to summon boss unless its dead
   if (!bossOne.isDead() && gameStart) summonBoss(bossOne);
   
-  //bullet activation and bullet functions
+  // Add bullets to the ArrayList when z is pressed according to the delay per bullet
   if (zPressed && (millis() - lastShot) > bulletDelay){
     Bullet b = new Bullet(character.x + character.size/3, character.y -15,15,15);
     bullets.add(b);
@@ -118,16 +120,18 @@ void draw(){
     lastShot = millis();
   }
 
-  //health ball
+  // Add a health ball to the ArrayList every x time
   hpballDelay = random(25000,35000);
-  if (millis() - lasthpBall > hpballDelay && hpballs.isEmpty() && bossOne.stage() >= 2){
+  if (millis() - lasthpBall > hpballDelay && hpballs.isEmpty() && bossOne.stage() >= 2 && gameStart){
     float hp = random(20,40);
     HealthBall hpb = new HealthBall(random(0,width-150),random(0, height/2),2,50,random(25,30),hp,hp,random(15000,20000));
     hpballs.add(hpb);
   }
+
+  // Call method to handle HP balls if ArrayList not empty
   if (!hpballs.isEmpty()) {handlehpBalls();}
 
-  //handle some functions
+  // Call method to handle character's bullets and pattern functions if ArrayList not empty
   if (!bullets.isEmpty()) {bulletStuff();}
   if (!pattern1.isEmpty()) {handlePattern(pattern1, pattern1Coll);}
   if (!pattern2.isEmpty()) {handlePattern(pattern2, pattern2Coll);}
@@ -138,7 +142,7 @@ void draw(){
   if (!pattern5Shield.isEmpty()) {pattern5(pattern5Shield);}
   if (!pattern6.isEmpty()) {handlePattern(pattern6, pattern6Coll);}
 
-  //activate other functions
+  // Call method to display instructions, debug and FPS texts if needed
   if (!gameStart) {
     startText();
     tutoText();
@@ -146,6 +150,7 @@ void draw(){
   if (tPressed) {debugText();}
   fps();
 
+  // Call methods to trigger game over or victory screens if needed
   if(gameOver) {
     noLoop();
     gameOver();
@@ -156,22 +161,22 @@ void draw(){
   }
 }
 
-//handle character
+// Handle character
 void summonCharacter(Character character){
-  //appear and move
+  // Appear and move
   character.display();
   character.move();
-  //create own collision
+  // Create own collision
   float sizeMult = -2;
   CollisionBox charCollision = new CollisionBox(character.x - (sizeMult/2), character.y - (sizeMult/2), character.size + sizeMult, character.size + sizeMult);
   charCollision.display();
-  //call method for collision with boss bullets
+  // Call method to handle character collision with boss bullets
   handleCharacterCollisions(charCollision, pattern1, pattern1Coll);
   handleCharacterCollisions(charCollision, pattern2, pattern2Coll);
   handleCharacterCollisions(charCollision, pattern3, pattern3Coll);
   handleCharacterCollisions(charCollision, pattern4, pattern4Coll);
   handleCharacterCollisions(charCollision, pattern6, pattern6Coll);
-  //collision with edges
+  // Handle collision with edges
   if (charCollision.xpos < 0) {
     character.x = 0;
   }
@@ -184,11 +189,11 @@ void summonCharacter(Character character){
   if (charCollision.ypos > height - character.size) {
     character.y = height - character.size;
   }
-  //display health
+  // Display health bar
   character.displayHP();
 }
 
-//collision with boss bullets
+// Handle collisions between character and boss bullets
 void handleCharacterCollisions(CollisionBox charCollision, ArrayList<XBullet> pattern, ArrayList<CollisionCircle> coll){
   Iterator<XBullet> i = pattern.listIterator();
   Iterator<CollisionCircle> j = coll.listIterator();
@@ -216,16 +221,16 @@ void handleCharacterCollisions(CollisionBox charCollision, ArrayList<XBullet> pa
   }
 }
 
-//handle boss
+// Handle boss
 void summonBoss(Boss boss){
-  //appear
+  // Appear and move
   boss.display();
   boss.move();
-  //create own collision
+  // Create own collision
   float sizeMult = 5;
   CollisionBox bossCollision = new CollisionBox(boss.x - (sizeMult/2), boss.y - (sizeMult/2), boss.size + sizeMult, boss.size + sizeMult);
   bossCollision.display();
-  //collision with bullets
+  // Handle collision with character bullets
   Iterator<Bullet> i = bullets.listIterator();
   Iterator<CollisionBox> j = bulletsColl.listIterator();
   while (i.hasNext()){
@@ -245,7 +250,7 @@ void summonBoss(Boss boss){
       j.remove();
     }
   }
-  //collision with edges
+  // Handle collision with edges
   if (bossCollision.xpos < 0) {
     boss.x = 0;
   }
@@ -258,12 +263,13 @@ void summonBoss(Boss boss){
   if (bossCollision.ypos > height - boss.size) {
     boss.y = height - boss.size;
   }
-  //check stage
+  // Check stage depending on HP
   if (boss.stage() == 1){delayMult=1.5;}
   if (boss.stage() == 2){delayMult=1;}
   if (boss.stage() == 3){delayMult=0.5;}
-  //summon patterns
-  //pattern 1
+
+  // Summon patterns
+  // Pattern 1 (full circle bullets)
   if(boss.stage() >= 1){
     p1Delay = random(800,1200)*delayMult;
     if ((millis() - lastP1) > p1Delay && !canP2){
@@ -272,7 +278,7 @@ void summonBoss(Boss boss){
       lastP1 = millis();
     }
   }
-  //pattern 2
+  // Pattern 2 (bullet rain)
   if(boss.stage() >= 3){
     p2Duration = random(8000,14000)/delayMult;
     p2Delay = random(5000,11000)*delayMult;
@@ -291,7 +297,7 @@ void summonBoss(Boss boss){
       pattern2(random(10,16),10*random(2,4),random(50,100),p2colors);
     }
   }
-  //pattern 3
+  // Pattern 3 (bullet spirals)
   if(boss.stage() >= 1){
     p3Delay = random(3000,5000);
     if (p3Ended && !canP3 && (millis() - lastP3) > p3Delay) {
@@ -306,7 +312,7 @@ void summonBoss(Boss boss){
       p3Ended = false;
     }
   }
-  //pattern 4
+  // Pattern 4 (bombs)
   if(boss.stage() >= 2){
     p4Delay = random(2000,4000)*delayMult;
     if((millis() - lastP4) > p4Delay && !canP2){
@@ -316,7 +322,8 @@ void summonBoss(Boss boss){
       lastP4 = millis();
     }
   }
-  //pattern 5
+  
+  // Pattern 5 (shields)
   if(boss.stage() >= 3){
     p5Delay = random(70000,90000)*delayMult;
     if((millis() - lastP5) > p5Delay && !canP5){
@@ -328,12 +335,12 @@ void summonBoss(Boss boss){
     }
     if (pattern5Shield.isEmpty()) {canP5 = false;}
   }
-  //display health
+  // Display health bar
   boss.displayHP();
 }
 
-//Boss bullet patterns
-//pattern 1
+// Handle boss bullet patterns
+// Pattern 1
 void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngle, float startingAngle, float[] bullColor){
   for (int i = 0; i <= maxAngle/angleDiff; i = i + 1) {
     XBullet b = new XBullet(boss.x + boss.size/2, boss.y + boss.size/2,speed,speed,startingAngle + (angleDiff*i),size,20,bullColor);
@@ -343,7 +350,7 @@ void pattern1(Boss boss, float speed, float angleDiff, float size, float maxAngl
   }   
 }
 
-//pattern 2
+// Pattern 2
 float p2IntDelay = millis();
 void pattern2(float speed, float size, float delay, float[] bullColor){
  if ((millis() - p2IntDelay) > delay) {
@@ -354,7 +361,7 @@ void pattern2(float speed, float size, float delay, float[] bullColor){
   }
 }
 
-//pattern 3
+// Pattern 3
 float p3IntDelay = millis();
 void pattern3(ArrayList<Spiral> spirals, Boss boss){
   Iterator<Spiral> i = spirals.listIterator();
@@ -371,7 +378,7 @@ void pattern3(ArrayList<Spiral> spirals, Boss boss){
   }
 }
 
-//pattern 4
+// Pattern 4
 float p4IntDelay = millis();
 void pattern4(ArrayList<Bomb> bombs){
   Iterator<Bomb> i = bombs.listIterator();
@@ -392,7 +399,7 @@ void pattern4(ArrayList<Bomb> bombs){
   }
 }
 
-//pattern 5
+// Pattern 5
 void pattern5(ArrayList<Shield> shields){
   Iterator<Shield> i = shields.listIterator();
   while(i.hasNext()){
@@ -410,7 +417,7 @@ void pattern5(ArrayList<Shield> shields){
   }
 }
 
-//handle boss bullets for patterns
+// Handle displaying boss bullets contained in ArrayLists for each pattern
 void handlePattern(ArrayList<XBullet> pattern, ArrayList<CollisionCircle> collisions) {
   Iterator<XBullet> i = pattern.listIterator();
   Iterator<CollisionCircle> j = collisions.listIterator();
@@ -428,6 +435,7 @@ void handlePattern(ArrayList<XBullet> pattern, ArrayList<CollisionCircle> collis
   }
 }
 
+// Handle collisions between character bullets and shields
 void handleShieldCollision(Shield shield, CollisionBox sc){
   Iterator<Bullet> i = bullets.listIterator();
   Iterator<CollisionBox> j = bulletsColl.listIterator();
@@ -450,11 +458,12 @@ void handleShieldCollision(Shield shield, CollisionBox sc){
   }
 }
 
+// Handle HP balls
 void handlehpBalls(){
   Iterator<HealthBall> i = hpballs.listIterator();
   if (i.hasNext()){
     HealthBall hpb = i.next();
-    CollisionCircle c = new CollisionCircle(hpb.x,hpb.y,hpb.size);
+    CollisionCircle c = new CollisionCircle(hpb.x+hpb.size/2,hpb.y+hpb.size/2,hpb.size);
     handlehpBallCollision(hpb,c);
     hpb.display();
     c.display();
@@ -466,6 +475,7 @@ void handlehpBalls(){
   }
 }
 
+// Handle collisions between character bullets and HP balls
 void handlehpBallCollision(HealthBall hpb, CollisionCircle hpbc){
   Iterator<Bullet> i = bullets.listIterator();
   Iterator<CollisionBox> j = bulletsColl.listIterator();
@@ -499,7 +509,7 @@ void handlehpBallCollision(HealthBall hpb, CollisionCircle hpbc){
   }
 }
 
-//handle amount of bullets and drawing bullets on screen (collisions included)
+// Handle character bullets
 void bulletStuff() {
   Iterator<Bullet> i = bullets.listIterator();
   Iterator<CollisionBox> j = bulletsColl.listIterator();
@@ -517,7 +527,7 @@ void bulletStuff() {
   }
 }
 
-//fps counter (top left)
+// Show FPS counter (top left)
 void fps() {
   textFont(cambria);
   textSize(20);
@@ -526,7 +536,7 @@ void fps() {
   text(str(roundedfps/1000),25,25);
 }
 
-//start game text
+// Display start game text
 void startText(){
   textFont(pixel_art);
   textSize(60);
@@ -537,7 +547,7 @@ void startText(){
   text(">>>Press enter to start the game<<<",width/2-270,height-100);
 }
 
-//tutorial text
+// Display tutorial text
 void tutoText(){
   textFont(pixel_art);
   textSize(15);
@@ -551,7 +561,7 @@ void tutoText(){
   text("Press space to pause",width/2-400,height/2+80);
 }
 
-//DEBUG collisions text
+// Display DEBUG collisions text
 void debugText(){
   textFont(cambria);
   textSize(15);
@@ -559,12 +569,12 @@ void debugText(){
   text("DEBUG COLLISIONS",width-150,30);
 }
 
-//game over text
+// Display game over text
 void gameOver(){
   image(game_over, 325, 125, 640, 360);
 }
 
-//handle key press and release
+// Handle key presses
 void keyPressed() {
   if (keyCode == LEFT) {
     aPressed = true;
@@ -575,13 +585,13 @@ void keyPressed() {
   } else if (keyCode == DOWN) {
     sPressed = true;
   }
-  if (key == 'z') {
+  if (key == 'z' || key == 'Z') {
     zPressed = true;
   }
-  if (key == 'x') {
+  if (key == 'x' || key == 'X') {
     xPressed = true;
   }
-  if (key == 't') {
+  if (key == 't' || key == 'T') {
     if (tPressed) {
       tPressed = false;
     } else {
@@ -607,7 +617,8 @@ void keyPressed() {
     lastP1 = lastP2 = lastP3 = lastP4 = lastP5 = millis();
   }
 }
-void  keyReleased () {
+// Handle key releases
+void keyReleased () {
   if (keyCode == LEFT) {
     aPressed = false;
   } else if (keyCode == RIGHT) {
@@ -617,10 +628,10 @@ void  keyReleased () {
   } else if (keyCode == DOWN) {
     sPressed = false;
   }
-  if (key == 'z') {
+  if (key == 'z' || key == 'Z') {
     zPressed = false;
   }
-  if (key == 'x') {
+  if (key == 'x' || key == 'X') {
     xPressed = false;
   }
 }

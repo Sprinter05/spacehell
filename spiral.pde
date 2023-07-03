@@ -23,6 +23,7 @@ class Spiral {
         this.bullColor = bullColor;
     }
 
+    // Spawns the bullets when the spiral pattern is triggered
     void draw(){
         if (((millis() - lastDelay) > delay) && repetitions > 0) {
             XBullet b = new XBullet(x,y,speed,speed,startAng+(angDiff*lastLoop),size,20,bullColor);

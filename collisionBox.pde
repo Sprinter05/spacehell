@@ -11,7 +11,7 @@ class CollisionBox {
         this.hei = hei;
     }
 
-    //DEBUG collisons with t key
+    // Displays the collision box is DEBUG enabled (t key)
     void display(){
         if (tPressed){
             strokeWeight(3);

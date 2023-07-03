@@ -20,11 +20,13 @@ class Shield {
         this.health = health;
     }
 
+    // Returns true if the shield has been destroyed
     boolean isDead(){
         if (health <= 0) return true;
         return false;
     }
 
+    // Draws the shield
     void draw(){
         fill(200,200,200);
         strokeWeight(0);
@@ -32,8 +34,8 @@ class Shield {
         image(sprite,x,y,sizeX,sizeY);
     }
 
+    // Moves randomly around the top part of the screen
     void update(){
-        //Animation thingy
         if ((millis() - lastAnim) > animDelay){
             x += random(-1,2);
             y += random(-1,2);
@@ -41,6 +43,7 @@ class Shield {
         }
     }
 
+    // Displays the shield's health bar
     void displayHP(){
         float hbcd = maxHealth / 66.6;
         strokeWeight(3);

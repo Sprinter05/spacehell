@@ -9,7 +9,7 @@ class CollisionCircle {
         this.radius = radius;
     }
 
-    //DEBUG collisons with t key
+    // Displays the collision box is DEBUG enabled (t key)
     void display(){
         if (tPressed){
             strokeWeight(3);
@@ -21,5 +21,4 @@ class CollisionCircle {
         fill(255,255,255,0);        
         ellipse(xpos, ypos, radius, radius);
     }
-
 }

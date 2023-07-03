@@ -24,6 +24,7 @@ class Bomb {
         this.bullColor = bullColor;
     }
 
+    // Returns whether the bomb has reached enough height to blow up
     boolean canTrigger(){
         if (y >= triggerY){
             return true;
@@ -31,10 +32,12 @@ class Bomb {
         return false;
     }
 
+    // Moves the bomb down
     void update(){
         y+= speed;
     }
 
+    // Blows up the bomb and spawns the bullets
     void triggerBomb(){
         for (int i = 0; i < 4; i++) {
             float startAng;
@@ -47,6 +50,7 @@ class Bomb {
         }
     }
 
+    // Draws the bomb
     void draw(){
         fill(255,255,255);
         strokeWeight(0);

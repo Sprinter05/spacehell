@@ -10,6 +10,7 @@ class XBullet {
     float[] bullColor;
     PImage sprite = loadImage("bossBullet.png");
 
+    // Boss patterns bullets
     XBullet(float x, float y, float xspeed, float yspeed, float angle, float radius, float delay, float[] bullColor){
         this.x = x;
         this.y = y;
@@ -21,6 +22,7 @@ class XBullet {
         this.bullColor = bullColor;
     }
 
+    // Moves the bullet according to its corresponding angle
     boolean update() {
         x += cos(radians(angle))*xspeed;
         y += sin(radians(angle))*yspeed;
@@ -28,6 +30,7 @@ class XBullet {
         return false;
     }
   
+    // Draws the bullet
     void draw() {
         if(millis() - lastDelay > delay) {
             fill(0,0,0);

@@ -25,8 +25,9 @@ class Character {
         this.health = health;
     }
 
+    // Draws the character
     void display(){
-        if (xPressed) { //concentration mode
+        if (xPressed) { // show the focus mode sprite
             rotateConc += 1;
             fill(0,0,0,0);
             strokeWeight(2);
@@ -44,6 +45,8 @@ class Character {
         stroke(0,0,0);
         image(sprite,x,y,size,size);
     }
+
+    // Moves the character when arrow keys are pressed and changes speed if focus mode is on
     void move(){
         float speedtoUse;
         if (xPressed){
@@ -65,7 +68,7 @@ class Character {
         if (sPressed){
             y += speedtoUse;
         }
-        //Animation thingy
+        //Move a bit around the screen to give an "im in space" effect.
         if (x == currx && y == curry && (millis() - lastAnim) > animDelay){
             x += random(-1,2);
             y += random(-1,2);
@@ -73,11 +76,13 @@ class Character {
         }
     }
 
+    // Returns whether the character is dead or not
     boolean isDead(){
         if (health <= 0) return true;
         return false;
     }
 
+    // Displays the character's health bar
     void displayHP(){
         float hbcd = maxHealth / 66.6;
         strokeWeight(3);
